@@ -29,14 +29,16 @@
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page"
+                    <a class="nav-link {% if request.endpoint == "synthesiser" %}active{% endif %}" aria-current="page"
                        href="{{ url_for("synthesiser") }}">Synthesiser</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for("concatenation_setup") }}">Concatenation</a>
+                    <a class="nav-link {% if request.endpoint == "concatenation_setup" %}active{% endif %}"
+                       href="{{ url_for("concatenation_setup") }}">Concatenation</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for("ml_setup") }}">ML</a>
+                    <a class="nav-link {% if request.endpoint == "ml_setup" %}active{% endif %}"
+                       href="{{ url_for("ml_setup") }}">ML</a>
                 </li>
             </ul>
         </div>
