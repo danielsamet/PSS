@@ -18,32 +18,43 @@
 
 <body class="bg-back d-flex flex-column min-vh-100">
 
-<main class="container bg-foreground flex-grow-1 p-0">
-    <nav class="navbar navbar-expand-lg navbar-light bg-second flex-grow-0 px-4">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="#">PSS</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarSupportedContent"
-                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page"
-                           href="{{ url_for("synthesiser") }}">Synthesiser</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for("concatenation_setup") }}">Concatenation</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for("ml_setup") }}">ML</a>
-                    </li>
-                </ul>
-            </div>
+<nav class="navbar navbar-expand-lg navbar-dark bg-second flex-grow-0 p-4">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="{{ url_for("index") }}">PSS</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page"
+                       href="{{ url_for("synthesiser") }}">Synthesiser</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for("concatenation_setup") }}">Concatenation</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for("ml_setup") }}">ML</a>
+                </li>
+            </ul>
         </div>
-    </nav>
+    </div>
+</nav>
 
+<section class="bg-white flex-grow-0 p-4">
+    <div class="container">
+        <label class="fw-bold me-3">Voices:</label>
+
+        <button class="btn btn-outline-secondary">Daniel1</button>
+        <button class="btn btn-secondary">Daniel2</button>
+        <button class="btn btn-outline-secondary">Daniel3</button>
+        <button class="btn btn-outline-secondary">Daniel4</button>
+    </div>
+</section>
+
+<main class="container bg-foreground flex-grow-1 p-0">
     <div class="p-4">
         {% block main_content %}{% endblock main_content %}
     </div>

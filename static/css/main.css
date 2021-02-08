@@ -1,16 +1,24 @@
 .bg-back {
-    background: #231f20;
+    background: #cadf75;
 }
 
 .bg-second {
-    background: #ec9a83;
+    background: #182332;
 }
 
 .bg-foreground {
-    background: #f9e0d9;
+    background: inherit;
 }
 
 .bg-item {
     background: #231f20;
     color: white;
+}
+
+.nav-item {
+    font-size: large
+}
+
+.synthesise-btn {
+    width: 7em;
 }

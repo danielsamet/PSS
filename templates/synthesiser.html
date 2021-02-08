@@ -1,1 +1,19 @@
 {% extends "base.html" %}
+
+{% block main_content %}
+    <div class="alert alert-warning">
+        <b>Note</b>: this project is still in progress and may not work as expected until v1.0 is released.
+    </div>
+    <div class="card">
+        <div class="card-body p-4">
+            <label class="form-label fw-bold" for="synthesiser_text">Text To Synthesise:</label>
+            <textarea class="form-control" id="synthesiser_text" rows="10"
+                      placeholder="Enter text here for speech synthesis"></textarea>
+
+            <div class="w-100 text-center mt-3">
+                <button class="btn btn-primary synthesise-btn">Synthesise</button>
+                <button class="btn btn-success synthesise-btn" disabled>Play</button>
+            </div>
+        </div>
+    </div>
+{% endblock main_content %}
