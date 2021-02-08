@@ -1,0 +1,16 @@
+.bg-back {
+    background: #231f20;
+}
+
+.bg-second {
+    background: #ec9a83;
+}
+
+.bg-foreground {
+    background: #f9e0d9;
+}
+
+.bg-item {
+    background: #231f20;
+    color: white;
+}
