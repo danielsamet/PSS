@@ -8,7 +8,7 @@
 }
 
 .bg-back {
-    background: #cadf75;
+    background: #dceba1;
 }
 
 .bg-second {
@@ -56,20 +56,20 @@
 }
 
 .btn-success {
-    background: #a8c62f;
-    border-color: #a8c62f;
+    background: #dceba1;
+    border-color: #dceba1;
     color: black;
 }
 
 .btn-success:hover {
-    background: #a8c62f;
-    border-color: #a8c62f;
+    background: #dceba1;
+    border-color: #dceba1;
     color: black;
     opacity: 0.9;
 }
 
 .btn-success:focus {
-    background: #a8c62f;
+    background: #dceba1;
     color: black;
     opacity: 0.9;
     box-shadow: none;
