@@ -31,6 +31,7 @@
 .btn-primary {
     background: #F00;
     border-color: #F00;
+    color: black;
 }
 
 .btn-primary:hover {
@@ -58,7 +59,6 @@
     background: #a8c62f;
     border-color: #a8c62f;
     color: black;
-    opacity: 0.9;
 }
 
 .btn-success:hover {
@@ -66,6 +66,17 @@
     border-color: #a8c62f;
     color: black;
     opacity: 0.9;
+}
+
+.btn-success:focus {
+    background: #a8c62f;
+    color: black;
+    opacity: 0.9;
+    box-shadow: none;
+}
+
+.btn-secondary:focus {
+    box-shadow: none;
 }
 
 .synthesise-btn {

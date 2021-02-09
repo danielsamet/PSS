@@ -14,9 +14,16 @@
     </div>
 
     <div class="card bg-item my-4">
-        <div class="card-body p-4 text-center">
-            <button class="btn btn-primary synthesise-btn fw-bold" id="synthesise_btn">Synthesise</button>
-            <button class="btn btn-secondary synthesise-btn fw-bold" id="play_btn">Play</button>
+        <div class="card-body p-4">
+            <div class="row justify-content-between">
+                <div class="col-auto">
+                    <button class="btn btn-primary synthesise-btn fw-bold" id="synthesise_btn">Synthesise</button>
+                </div>
+                <div class="col-auto text-end">
+                    <button class="btn btn-success synthesise-btn fw-bold" id="play_btn">Play</button>
+                    <button class="btn btn-secondary synthesise-btn fw-bold" id="pause_btn">Pause</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -87,6 +94,8 @@
     <script>
         window.addEventListener('DOMContentLoaded', () => {
             let play_btn = $("#play_btn");
+            let pause_btn = $("#pause_btn");
+
             let wavesurfer = WaveSurfer.create({
                 container: '#waveform',
                 waveColor: 'white',
@@ -96,25 +105,37 @@
 
             wavesurfer.load("{{ url_for("static", filename="media/waves_and_seagulls.wav") }}");
             wavesurfer.on("finish", function () {
-                $("#play_btn").text("Play");
+                toggle_play_buttons();
             })
 
             play_btn.click(function () {
-                if ($(this).text() === "Play")
-                    play_audio(this)
-                else
-                    pause_audio(this);
-            })
+                if (!wavesurfer.isPlaying())
+                    play_audio();
+            });
 
-            function play_audio(element) {
+            pause_btn.click(function () {
+                if (wavesurfer.isPlaying())
+                    pause_audio();
+            });
+
+            function play_audio() {
                 wavesurfer.play();
-                element.innerText = "Pause";
+                toggle_play_buttons();
             }
 
-            function pause_audio(element) {
-                console.log(452);
+            function pause_audio() {
                 wavesurfer.pause();
-                element.innerText = "Play";
+                toggle_play_buttons();
+            }
+
+            function toggle_play_buttons() {
+                if (play_btn.hasClass("btn-success")) {
+                    play_btn.removeClass("btn-success").addClass("btn-secondary");
+                    pause_btn.removeClass("btn-secondary").addClass("btn-success");
+                } else {
+                    play_btn.removeClass("btn-secondary").addClass("btn-success");
+                    pause_btn.removeClass("btn-success").addClass("btn-secondary");
+                }
             }
         });
     </script>
