@@ -2,12 +2,12 @@
 
 {% block main_content %}
     <div class="card bg-item">
-        <div class="card-header">
+        <div class="card-header" id="description-header">
             <div class="row">
                 <h3 class="col mb-0">Description</h3>
                 <div class="col text-end">
                     <a class="btn btn-secondary" data-bs-toggle="collapse" href="#description-body"
-                       id="toggle-description">
+                       id="toggle-description" aria-label="toggle collapse">
                         <i class="fa fa-plus"></i>
                     </a>
                 </div>
@@ -23,9 +23,9 @@
                 <h4>How does it work?</h4>
                 <p>Speech concatenation works by recording every phoneme and then stitching the recordings back together
                     to create new sequences of those phonemes.</p>
-                <div class="card-footer bg-warning text-dark fa-sm">
+                <div class="bg-warning text-dark rounded p-2 fa-sm">
                     <div class="row">
-                        <div class="col-auto"><i class="fa fa-info fa-2x mt-2 ms-2"></i></div>
+                        <div class="col-auto"><i class="fa fa-info fa-2x mt-2 ms-3 me-1"></i></div>
                         <p class="col mb-0">Please note, this setup has been prepared exclusively with British English
                             in mind. This is because a completely different dictionary would needed to map words to
                             phonemes for each dialect. Results may therefore vary for any dialect other than British
@@ -40,12 +40,20 @@
 {% block extra_js %}
     <script>
         window.addEventListener('DOMContentLoaded', () => {
-            $("#toggle-description").click(function () {
-                if ($(this.children[0]).hasClass("fa-minus"))
-                    $(this.children[0]).removeClass("fa-minus").addClass("fa-plus");
-                else
-                    $(this.children[0]).removeClass("fa-plus").addClass("fa-minus");
+            let description_header = $("#description-header");
+            let description_body = $("#description-body");
+            let toggle_btn  = $("#toggle-description");
+
+            description_body.on("hide.bs.collapse", function () {
+                description_header.removeClass("border-white");
+                $(toggle_btn.children()[0]).removeClass("fa-minus").addClass("fa-plus");
             })
-        });
+
+            description_body.on("show.bs.collapse", function () {
+                description_header.addClass("border-white");
+                $(toggle_btn.children()[0]).removeClass("fa-plus").addClass("fa-minus");
+            });
+        })
+        ;
     </script>
 {% endblock extra_js %}
