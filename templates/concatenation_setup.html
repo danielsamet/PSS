@@ -35,6 +35,40 @@
             </div>
         </div>
     </div>
+
+    <div class="row mt-4">
+        <div class="col-auto">
+            <div class="card bg-item">
+                <div class="card-body">
+                    <div class="d-flex align-items-start">
+                        <div class="nav flex-column nav-pills pe-2" id="phonemes-tab" role="tablist">
+                            {% for index in range(1, 31) %}
+                                <a class="nav-link {% if index == 1 %}active{% endif %}" id="phoneme-tab-{{ index }}"
+                                   data-bs-toggle="pill"
+                                   href="#phoneme-{{ index }}" role="tab" aria-controls="phoneme-{{ index }}"
+                                   {% if index == 1 %}aria-selected="true"{% endif %}>Phoneme {{ index }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col h-100">
+            <div class="card bg-item h-100">
+                <div class="card-body">
+                    <div class="tab-content" id="phonemes-tab-content">
+                        {% for index in range(1, 31) %}
+                            <div class="tab-pane fade {% if index == 1 %}show active{% endif %}"
+                                 id="phoneme-{{ index }}" role="tabpanel"
+                                 aria-labelledby="phoneme-tab-{{ index }}">
+                                {{ index }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock main_content %}
 
 {% block extra_js %}
@@ -42,7 +76,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             let description_header = $("#description-header");
             let description_body = $("#description-body");
-            let toggle_btn  = $("#toggle-description");
+            let toggle_btn = $("#toggle-description");
 
             description_body.on("hide.bs.collapse", function () {
                 description_header.removeClass("border-white");
@@ -53,7 +87,6 @@
                 description_header.addClass("border-white");
                 $(toggle_btn.children()[0]).removeClass("fa-plus").addClass("fa-minus");
             });
-        })
-        ;
+        });
     </script>
 {% endblock extra_js %}

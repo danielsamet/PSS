@@ -130,3 +130,39 @@ wave {
 }
 
 /* Star Rating End */
+
+#phonemes-tab {
+    overflow-y: scroll;
+    flex-wrap: nowrap;
+    height: 20em;
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.nav-pills .nav-link {
+    color: #b7b7b7;
+}
+
+.nav-pills .nav-link.active {
+    background: #dceba1;
+    color: black;
+    font-weight: bold;
+}
