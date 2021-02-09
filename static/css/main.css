@@ -1,3 +1,7 @@
+.container {
+    max-width: 1200px;
+}
+
 .bg-back {
     background: #cadf75;
 }
@@ -11,7 +15,7 @@
 }
 
 .bg-item {
-    background: #231f20;
+    background: #182332;
     color: white;
 }
 
@@ -19,6 +23,79 @@
     font-size: large
 }
 
+.btn-primary {
+    background: #d64933;
+    border-color: #d64933;
+    color: black;
+}
+
+.btn-primary:hover {
+    background: #d64933;
+    border-color: #d64933;
+    opacity: 0.9;
+}
+
+.btn-success {
+    background: #7c7c7c;
+    border-color: #7c7c7c;
+    color: black;
+}
+
+.btn-success:hover {
+    background: #7c7c7c;
+    border-color: #7c7c7c;
+    opacity: 0.9;
+}
+
 .synthesise-btn {
     width: 7em;
 }
+
+wave {
+    border-right: 0 !important;
+}
+
+/* Star Rating Start */
+.rate {
+    height: 46px;
+    padding: 0 10px;
+    width: 11em;
+}
+
+.rate:not(:checked) > input {
+    position: absolute;
+    top: -9999px;
+}
+
+.rate:not(:checked) > label {
+    float: right;
+    width: 1em;
+    overflow: hidden;
+    white-space: nowrap;
+    cursor: pointer;
+    font-size: 30px;
+    color: #ccc;
+}
+
+.rate:not(:checked) > label:before {
+    content: '★ ';
+}
+
+.rate > input:checked ~ label {
+    color: #ffc700;
+}
+
+.rate:not(:checked) > label:hover,
+.rate:not(:checked) > label:hover ~ label {
+    color: #deb217;
+}
+
+.rate > input:checked + label:hover,
+.rate > input:checked + label:hover ~ label,
+.rate > input:checked ~ label:hover,
+.rate > input:checked ~ label:hover ~ label,
+.rate > label:hover ~ input:checked ~ label {
+    color: #c59b08;
+}
+
+/* Star Rating End */

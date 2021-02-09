@@ -4,16 +4,76 @@
     <div class="alert alert-warning">
         <b>Note</b>: this project is still in progress and may not work as expected until v1.0 is released.
     </div>
-    <div class="card">
-        <div class="card-body p-4">
-            <label class="form-label fw-bold" for="synthesiser_text">Text To Synthesise:</label>
-            <textarea class="form-control" id="synthesiser_text" rows="10"
-                      placeholder="Enter text here for speech synthesis"></textarea>
 
-            <div class="w-100 text-center mt-3">
-                <button class="btn btn-primary synthesise-btn">Synthesise</button>
-                <button class="btn btn-success synthesise-btn" disabled>Play</button>
+    <div class="card bg-item">
+        <div class="card-body p-4">
+            <label class="h4 form-label fw-bold" for="synthesiser_text">Text To Synthesise:</label>
+            <textarea class="form-control bg-light" id="synthesiser_text" rows="8"
+                      placeholder="Enter text here for speech synthesis"></textarea>
+        </div>
+    </div>
+
+    <div class="card bg-item my-4">
+        <div class="card-body p-4 text-center">
+            <button class="btn btn-primary synthesise-btn fw-bold" id="synthesise_btn">Synthesise</button>
+            <button class="btn btn-success synthesise-btn fw-bold" id="play_btn">Play</button>
+        </div>
+    </div>
+
+    <div class="card bg-item my-4">
+        <div class="card-body p-4 text-center">
+            <div id="waveform"></div>
+
+            <div class="rate mx-auto">
+                <input type="radio" id="star5" name="rate" value="5"/>
+                <label for="star5" title="text">5 stars</label>
+                <input type="radio" id="star4" name="rate" value="4"/>
+                <label for="star4" title="text">4 stars</label>
+                <input type="radio" id="star3" name="rate" value="3"/>
+                <label for="star3" title="text">3 stars</label>
+                <input type="radio" id="star2" name="rate" value="2"/>
+                <label for="star2" title="text">2 stars</label>
+                <input type="radio" id="star1" name="rate" value="1"/>
+                <label for="star1" title="text">1 star</label>
             </div>
         </div>
     </div>
 {% endblock main_content %}
+
+{% block extra_js %}
+    <script src="{{ url_for("static", filename="js/wavesurfer.min.js") }}"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            let play_btn = $("#play_btn");
+            let wavesurfer = WaveSurfer.create({
+                container: '#waveform',
+                waveColor: 'white',
+                progressColor: '#d64933',
+                hideScrollbar: true
+            });
+
+            wavesurfer.load("{{ url_for("static", filename="media/waves_and_seagulls.wav") }}");
+            wavesurfer.on("finish", function () {
+                $("#play_btn").text("Play");
+            })
+
+            play_btn.click(function () {
+                if ($(this).text() === "Play")
+                    play_audio(this)
+                else
+                    pause_audio(this);
+            })
+
+            function play_audio(element) {
+                wavesurfer.play();
+                element.innerText = "Pause";
+            }
+
+            function pause_audio(element) {
+                console.log(452);
+                wavesurfer.pause();
+                element.innerText = "Play";
+            }
+        });
+    </script>
+{% endblock extra_js %}
