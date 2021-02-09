@@ -1,1 +1,51 @@
 {% extends "base.html" %}
+
+{% block main_content %}
+    <div class="card bg-item">
+        <div class="card-header">
+            <div class="row">
+                <h3 class="col mb-0">Description</h3>
+                <div class="col text-end">
+                    <a class="btn btn-secondary" data-bs-toggle="collapse" href="#description-body"
+                       id="toggle-description">
+                        <i class="fa fa-plus"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="collapse fade" id="description-body">
+            <div class="card-body">
+                <h4>What is it?</h4>
+                <p>Merging pre-recorded bits of audio to generate audio for words and sentences.</p>
+
+                <hr class="mt-4">
+
+                <h4>How does it work?</h4>
+                <p>Speech concatenation works by recording every phoneme and then stitching the recordings back together
+                    to create new sequences of those phonemes.</p>
+                <div class="card-footer bg-warning text-dark fa-sm">
+                    <div class="row">
+                        <div class="col-auto"><i class="fa fa-info fa-2x mt-2 ms-2"></i></div>
+                        <p class="col mb-0">Please note, this setup has been prepared exclusively with British English
+                            in mind. This is because a completely different dictionary would needed to map words to
+                            phonemes for each dialect. Results may therefore vary for any dialect other than British
+                            English.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock main_content %}
+
+{% block extra_js %}
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            $("#toggle-description").click(function () {
+                if ($(this.children[0]).hasClass("fa-minus"))
+                    $(this.children[0]).removeClass("fa-minus").addClass("fa-plus");
+                else
+                    $(this.children[0]).removeClass("fa-plus").addClass("fa-minus");
+            })
+        });
+    </script>
+{% endblock extra_js %}
