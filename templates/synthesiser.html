@@ -16,28 +16,70 @@
     <div class="card bg-item my-4">
         <div class="card-body p-4 text-center">
             <button class="btn btn-primary synthesise-btn fw-bold" id="synthesise_btn">Synthesise</button>
-            <button class="btn btn-success synthesise-btn fw-bold" id="play_btn">Play</button>
+            <button class="btn btn-secondary synthesise-btn fw-bold" id="play_btn">Play</button>
         </div>
     </div>
 
-    <div class="card bg-item my-4">
-        <div class="card-body p-4 text-center">
-            <div id="waveform"></div>
+    <div class="row">
+        <div class="col-8 flex-grow-1">
+            <div class="card bg-item">
+                <div class="card-body p-4 text-center">
+                    <div id="waveform"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-4 flex-grow-1">
+            <div class="card bg-item h-100">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="rating-col">
+                            <label class="col-form-label fw-bold metric-label">Metric 1</label>
+                        </div>
+                        <div class="col">
+                            <div class="rate mx-auto">
+                                {% for index in range(5, 0, -1) %}
+                                    <input type="radio" id="star{{ index }}" name="rate_metric_1" value="{{ index }}"
+                                           {% if index == 4 %}checked{% endif %}/>
+                                    <label for="star{{ index }}" title="text">{{ index }} stars</label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
 
-            <div class="rate mx-auto">
-                <input type="radio" id="star5" name="rate" value="5"/>
-                <label for="star5" title="text">5 stars</label>
-                <input type="radio" id="star4" name="rate" value="4"/>
-                <label for="star4" title="text">4 stars</label>
-                <input type="radio" id="star3" name="rate" value="3"/>
-                <label for="star3" title="text">3 stars</label>
-                <input type="radio" id="star2" name="rate" value="2"/>
-                <label for="star2" title="text">2 stars</label>
-                <input type="radio" id="star1" name="rate" value="1"/>
-                <label for="star1" title="text">1 star</label>
+                    <div class="row">
+                        <div class="rating-col">
+                            <label class="col-form-label fw-bold metric-label">Metric 2</label>
+                        </div>
+                        <div class="col">
+                            <div class="rate mx-auto">
+                                {% for index in range(10, 5, -1) %}
+                                    <input type="radio" id="star{{ index }}" name="rate_metric_2"
+                                           value="{{ index }}" {% if index == 7 %}checked{% endif %}/>
+                                    <label for="star{{ index }}" title="text">{{ index }} stars</label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="rating-col">
+                            <label class="col-form-label fw-bold metric-label">Metric 3</label>
+                        </div>
+                        <div class="col">
+                            <div class="rate mx-auto">
+                                {% for index in range(15, 10, -1) %}
+                                    <input type="radio" id="star{{ index }}" name="rate_metric_3"
+                                           value="{{ index }}" {% if index == 13 %}checked{% endif %}/>
+                                    <label for="star{{ index }}" title="text">{{ index }} stars</label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
 {% endblock main_content %}
 
 {% block extra_js %}

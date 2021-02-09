@@ -39,14 +39,32 @@
     opacity: 0.9;
 }
 
+.btn-primary:focus {
+    background: #F00;
+    border-color: #F00;
+    box-shadow: none;
+    opacity: 0.9;
+}
+
+.rating-col {
+    width: 8em;
+}
+
+.metric-label {
+    line-height: 2em;
+}
+
 .btn-success {
-    background: #7c7c7c;
-    border-color: #7c7c7c;
+    background: #a8c62f;
+    border-color: #a8c62f;
+    color: black;
+    opacity: 0.9;
 }
 
 .btn-success:hover {
-    background: #7c7c7c;
-    border-color: #7c7c7c;
+    background: #a8c62f;
+    border-color: #a8c62f;
+    color: black;
     opacity: 0.9;
 }
 
@@ -85,12 +103,12 @@ wave {
 }
 
 .rate > input:checked ~ label {
-    color: #ffc700;
+    color: #ffc500;
 }
 
 .rate:not(:checked) > label:hover,
 .rate:not(:checked) > label:hover ~ label {
-    color: #deb217;
+    color: #ffc500;
 }
 
 .rate > input:checked + label:hover,
@@ -98,7 +116,7 @@ wave {
 .rate > input:checked ~ label:hover,
 .rate > input:checked ~ label:hover ~ label,
 .rate > label:hover ~ input:checked ~ label {
-    color: #c59b08;
+    color: #ffc500;
 }
 
 /* Star Rating End */
