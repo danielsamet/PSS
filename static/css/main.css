@@ -78,7 +78,7 @@
     box-shadow: none;
 }
 
-.synthesise-btn {
+.fixed-btn {
     width: 7em;
 }
 
@@ -165,4 +165,16 @@ wave {
     background: #dceba1;
     color: black;
     font-weight: bold;
+}
+
+.table-primary {
+    --bs-table-bg: #6eaaed;
+}
+
+.table-white {
+    --bs-table-bg: white;
+}
+
+hr{
+    opacity: 1;
 }
