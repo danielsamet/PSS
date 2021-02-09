@@ -1,3 +1,8 @@
+.nav-logo {
+    width: 18em;
+    height: 100%;
+}
+
 .container {
     max-width: 1200px;
 }
@@ -24,21 +29,19 @@
 }
 
 .btn-primary {
-    background: #d64933;
-    border-color: #d64933;
-    color: black;
+    background: #F00;
+    border-color: #F00;
 }
 
 .btn-primary:hover {
-    background: #d64933;
-    border-color: #d64933;
+    background: #F00;
+    border-color: #F00;
     opacity: 0.9;
 }
 
 .btn-success {
     background: #7c7c7c;
     border-color: #7c7c7c;
-    color: black;
 }
 
 .btn-success:hover {
