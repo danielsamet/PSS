@@ -134,7 +134,7 @@ wave {
 #phonemes-tab {
     overflow-y: scroll;
     flex-wrap: nowrap;
-    height: 20em;
+    height: 21em;
 }
 
 /* width */
@@ -165,6 +165,18 @@ wave {
     background: #dceba1;
     color: black;
     font-weight: bold;
+}
+
+.nav-pills .nav-link i.fa-check-circle {
+    color: #dceba1;
+}
+
+.nav-pills .nav-link i.fa-exclamation-circle {
+    color: #ffc107;
+}
+
+.nav-pills .nav-link.active i {
+    color: #212529;
 }
 
 .table-primary {

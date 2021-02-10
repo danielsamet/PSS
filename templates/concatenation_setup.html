@@ -2,18 +2,18 @@
 
 {% block main_content %}
     <div class="card bg-item">
-        <div class="card-header" id="description-header">
+        <div class="card-header border-white" id="description-header">
             <div class="row">
                 <h3 class="col mb-0">Description</h3>
                 <div class="col text-end">
                     <a class="btn btn-secondary" data-bs-toggle="collapse" href="#description-body"
                        id="toggle-description" aria-label="toggle collapse">
-                        <i class="fa fa-plus"></i>
+                        <i class="fa fa-minus"></i>
                     </a>
                 </div>
             </div>
         </div>
-        <div class="collapse fade" id="description-body">
+        <div class="collapse fade show" id="description-body">
             <div class="card-body">
                 <h4>What is it?</h4>
                 <p>Merging pre-recorded bits of audio to generate audio for words and sentences.</p>
@@ -42,16 +42,21 @@
                 <div class="card-body">
                     <div class="d-flex align-items-start">
                         <div class="nav flex-column nav-pills pe-2" id="phonemes-tab" role="tablist">
+
                             {% for phoneme in phonemes %}
                                 <a class="nav-link {% if loop.index == 1 %}active{% endif %}"
-                                   id="phoneme-tab-{{ loop.index }}"
-                                   data-bs-toggle="pill"
+                                   id="phoneme-tab-{{ loop.index }}" data-bs-toggle="pill"
                                    href="#phoneme-{{ loop.index }}" role="tab" aria-controls="phoneme-{{ loop.index }}"
                                    {% if loop.index == 1 %}aria-selected="true"{% endif %}>
-                                    <i class="fa fa-exclamation-circle {% if loop.index == 1 %}text-dark{% else %}text-warning{% endif %} me-2"></i>
-                                    Phoneme {{ loop.index }}: {{ phoneme }}
+
+                                    <span>
+                                        <i class="fa {% if 2 < loop.index < 6 %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} me-2"></i>
+                                        Phoneme {{ loop.index }}:
+                                    </span>
+                                    <span class="float-end">{{ phoneme }}</span>
                                 </a>
                             {% endfor %}
+
                         </div>
                     </div>
                 </div>
@@ -110,6 +115,7 @@
     <script src="{{ url_for("static", filename="js/wavesurfer.min.js") }}"></script>
     <script>
         window.addEventListener('DOMContentLoaded', () => {
+            // Description Collapse
             let description_header = $("#description-header");
             let description_body = $("#description-body");
             let toggle_btn = $("#toggle-description");
@@ -117,13 +123,17 @@
             description_body.on("hide.bs.collapse", function () {
                 description_header.removeClass("border-white");
                 $(toggle_btn.children()[0]).removeClass("fa-minus").addClass("fa-plus");
-            })
+            });
 
             description_body.on("show.bs.collapse", function () {
                 description_header.addClass("border-white");
                 $(toggle_btn.children()[0]).removeClass("fa-plus").addClass("fa-minus");
             });
 
+            // Phoneme Navigation
+
+
+            // Audio:
             let play_btn = $("#play_btn");
             let pause_btn = $("#pause_btn");
 
