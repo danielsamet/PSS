@@ -24,6 +24,10 @@
     color: white;
 }
 
+.text-danger {
+    color: #F00 !important;
+}
+
 .nav-item {
     font-size: large
 }
@@ -187,6 +191,6 @@ wave {
     --bs-table-bg: white;
 }
 
-hr{
+hr {
     opacity: 1;
 }
