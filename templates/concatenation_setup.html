@@ -27,7 +27,7 @@
                     <div class="row">
                         <div class="col-auto"><i class="fa fa-info fa-2x mt-2 ms-3 me-1"></i></div>
                         <p class="col mb-0">Please note, this setup has been prepared exclusively with British English
-                            in mind. This is because a completely different dictionary would needed to map words to
+                            in mind. This is because a completely different dictionary would be needed to map words to
                             phonemes for each dialect. Results may therefore vary for any dialect other than British
                             English.</p>
                     </div>
@@ -43,7 +43,7 @@
                     <div class="d-flex align-items-start">
                         <div class="nav flex-column nav-pills pe-2" id="phonemes-tab" role="tablist">
 
-                            {% for phoneme in phonemes %}
+                            {% for phoneme in phoneme_words %}
                                 <a class="nav-link {% if loop.index == 1 %}active{% endif %}"
                                    id="phoneme-tab-{{ loop.index }}" data-bs-toggle="pill"
                                    href="#phoneme-{{ loop.index }}" role="tab" aria-controls="phoneme-{{ loop.index }}"
@@ -64,7 +64,7 @@
         </div>
         <div class="col h-100">
             <div class="tab-content" id="phonemes-tab-content">
-                {% for phoneme in phonemes %}
+                {% for phoneme in phoneme_words %}
                     <div class="tab-pane fade {% if loop.index == 1 %}show active{% endif %}"
                          id="phoneme-{{ loop.index }}" role="tabpanel"
                          aria-labelledby="phoneme-tab-{{ loop.index }}">
@@ -78,30 +78,18 @@
                                 <table class="table table-bordered text-white text-center mx-auto"
                                        style="max-width: 30em;">
                                     <tbody>
-                                    <tr>
-                                        <td class="font-monospace">
-                                            <span class="text-danger fw-bold">u</span>nchanged
-                                        </td>
-                                        <td>
-                                            <span class="text-danger fw-bold">ɐ</span> n tʃ ˈeɪ n dʒ d
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="font-monospace">
-                                            <span class="text-danger fw-bold">u</span>nchanged
-                                        </td>
-                                        <td>
-                                            <span class="text-danger fw-bold">ɐ</span> n tʃ ˈeɪ n dʒ d
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="font-monospace">
-                                            <span class="text-danger fw-bold">u</span>nchanged
-                                        </td>
-                                        <td>
-                                            <span class="text-danger fw-bold">ɐ</span> n tʃ ˈeɪ n dʒ d
-                                        </td>
-                                    </tr>
+                                    {% for word in phoneme_words[phoneme] %}
+                                        <tr>
+                                            <td class="font-monospace bg-white text-dark">
+                                                {% for char in word -%}
+                                                    <span {% if char.isupper() %}class="text-danger fw-bold"{% endif %}>{{ char }}</span>
+                                                {%- endfor %}
+                                            </td>
+                                            <td>
+                                                <span class="text-danger fw-bold">ɐ</span> n tʃ ˈeɪ n dʒ d
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
                                     </tbody>
                                 </table>
 

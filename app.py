@@ -1,4 +1,5 @@
 from flask import Flask, render_template, redirect, url_for
+from phoneme_example_dict import phoneme_words
 
 app = Flask(__name__)
 
@@ -26,12 +27,7 @@ def synthesiser():
 
 @app.route('/concatenation_setup')
 def concatenation_setup():
-    phonemes = {'ˌɛ', 'ð', 'ˌʊ', 't', 'ˌɑː', 'aʊ', 'eɪ', 'ˈaɪ', 'v', 'ˌeɪ', 'ˌuː', 'ɔɪ', 'ˈʊ', 'ˈæ', 'ˌəʊ', 'k', 'ˌɛə',
-                'ˌɐ', 'ʒ', 'ɒ', 'p', 'ˌɔː', 'ˈɔː', 'm', 'ˈiː', 'ɹ', 'ɑː', 'ˌɪ', 'əʊ', 'n', 'h', 'ˌɒ', 'ɪ', 'ɪə', 'ŋ',
-                'z', 'ˈɑː', 'ˌaʊ', 'ˈʊə', 'ˌaɪ', 'ˈaʊ', 'ˈɪə', 'ˈɜː', 'ˌiː', 'ˈə', 'ˌæ', 'ˌʊə', 'w', 'l', 'i', 'ˈɐ',
-                'ˈɪ', 'ˈɔɪ', 'ɔː', 'ˌɪə', 'ʃ', 'ˈɒ', 'aɪ', 'ˈɛə', 'ʊ', 'ə', 'b', 'uː', 'ˈəʊ', 'ɛə', 'ˌɔɪ', 'ˈuː', 'æ',
-                'ɛ', 'g', 'θ', 'ʊə', 'd', 'ɜː', 'f', 'ˌɜː', 'ɐ', 'iː', 'dʒ', 's', 'tʃ', 'ˈɛ', 'ˈeɪ', 'j'}
-    return render_template("concatenation_setup.html", phonemes=phonemes)
+    return render_template("concatenation_setup.html", phoneme_words=phoneme_words)
 
 
 @app.route('/ml_setup')
