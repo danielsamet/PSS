@@ -82,7 +82,7 @@
                                         <tr>
                                             <td class="font-monospace bg-white text-dark">
                                                 {% for char in word -%}
-                                                    <span {% if char.isupper() %}class="text-danger fw-bold"{% endif %}>{{ char }}</span>
+                                                    <span {% if char.isupper() %}class="text-danger fw-bold"{% endif %}>{{ char.lower() }}</span>
                                                 {%- endfor %}
                                             </td>
                                             <td>
