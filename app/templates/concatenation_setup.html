@@ -43,13 +43,13 @@
                     <div class="d-flex align-items-start">
                         <div class="nav flex-column nav-pills pe-2" id="phonemes-tab" role="tablist">
 
-                            {% for phoneme in phoneme_words %}
+                            {% for phoneme in phoneme_dict %}
                                 <a class="nav-link {% if loop.index == 1 %}active{% endif %}"
                                    id="phoneme-tab-{{ loop.index }}" data-bs-toggle="pill"
                                    href="#phoneme-{{ loop.index }}" role="tab" aria-controls="phoneme-{{ loop.index }}"
                                    {% if loop.index == 1 %}aria-selected="true"{% endif %}>
 
-                                    <span>
+                                    <span class="me-2">
                                         <i class="fa {% if 2 < loop.index < 6 %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} me-2"></i>
                                         Phoneme {{ loop.index }}:
                                     </span>
@@ -64,7 +64,7 @@
         </div>
         <div class="col h-100">
             <div class="tab-content" id="phonemes-tab-content">
-                {% for phoneme in phoneme_words %}
+                {% for phoneme in phoneme_dict %}
                     <div class="tab-pane fade {% if loop.index == 1 %}show active{% endif %}"
                          id="phoneme-{{ loop.index }}" role="tabpanel"
                          aria-labelledby="phoneme-tab-{{ loop.index }}">
@@ -78,15 +78,23 @@
                                 <table class="table table-bordered text-white text-center mx-auto"
                                        style="max-width: 30em;">
                                     <tbody>
-                                    {% for word in phoneme_words[phoneme] %}
+                                    {% for item in phoneme_dict[phoneme] %}
                                         <tr>
                                             <td class="font-monospace bg-white text-dark">
-                                                {% for char in word -%}
-                                                    <span {% if char.isupper() %}class="text-danger fw-bold"{% endif %}>{{ char.lower() }}</span>
+                                                {% for char in item[0] -%}
+                                                    <span {% if char.isupper() %}class="text-danger fw-bold"{% endif %}>
+                                                        {{- char.lower().replace("(1)", "") -}}
+                                                    </span>
                                                 {%- endfor %}
                                             </td>
                                             <td>
-                                                <span class="text-danger fw-bold">ɐ</span> n tʃ ˈeɪ n dʒ d
+                                                {% for phoneme_ in item[1] %}
+                                                    {% if phoneme_ == phoneme %}
+                                                        <span class="text-danger fw-bold">{{ phoneme_ }}</span>
+                                                    {% else %}
+                                                        {{ phoneme_ }}
+                                                    {% endif %}
+                                                {% endfor %}
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -104,9 +112,11 @@
                                     </div>
                                     {% if loop.index == 1 %}
                                         <div class="col-auto text-end">
-                                            <button class="btn btn-success fixed-btn fw-bold" id="play_btn">Play
+                                            <button class="btn btn-success fixed-btn fw-bold" id="play_btn">
+                                                Play
                                             </button>
-                                            <button class="btn btn-secondary fixed-btn fw-bold" id="pause_btn">Pause
+                                            <button class="btn btn-secondary fixed-btn fw-bold" id="pause_btn">
+                                                Pause
                                             </button>
                                         </div>
                                     {% endif %}

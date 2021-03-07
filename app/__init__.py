@@ -1,9 +1,25 @@
 from flask import Flask, render_template, redirect, url_for
+from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
+
 from app.phoneme_example_dict import phoneme_words
+from app.utils import get_words
+from config import Config
+
+migrate = Migrate()
+db = SQLAlchemy()
 
 
-def create_app():
+def create_app(config_class=Config):
     app = Flask(__name__)
+    app.config.from_object(config_class)
+
+    db.init_app(app)
+    migrate.init_app(app, db, config_class.MIGRATIONS_DIR)
+
+    app.words = get_words()
+    app.phoneme_dict = {phoneme_word: [(word, app.words[word.upper()]) for word in phoneme_words[phoneme_word] if word]
+                        for phoneme_word in phoneme_words}
 
     app.add_url_rule("/favicon", "favicon", lambda: redirect(url_for("static", filename="favicon/favicon.ico")))
     app.add_url_rule("/favicon-16x16", "favicon-16x16",
@@ -26,7 +42,7 @@ def create_app():
 
     @app.route('/concatenation_setup')
     def concatenation_setup():
-        return render_template("concatenation_setup.html", phoneme_words=phoneme_words)
+        return render_template("concatenation_setup.html", phoneme_dict=app.phoneme_dict)
 
     @app.route('/ml_setup')
     def ml_setup():
