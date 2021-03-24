@@ -194,3 +194,11 @@ wave {
 hr {
     opacity: 1;
 }
+
+.stopwatch {
+    font-family: 'Courier New', monospace;
+    text-align: center;
+    margin: 1em;
+    font-size: xx-large;
+    font-weight: bold;
+}

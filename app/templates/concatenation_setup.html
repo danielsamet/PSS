@@ -62,6 +62,7 @@
                 </div>
             </div>
         </div>
+
         <div class="col h-100">
             <div class="tab-content" id="phonemes-tab-content">
                 {% for phoneme in phoneme_dict %}
@@ -89,11 +90,11 @@
                                             </td>
                                             <td>
                                                 {% for phoneme_ in item[1] %}
-                                                    {% if phoneme_ == phoneme %}
+                                                    {%- if phoneme_ == phoneme -%}
                                                         <span class="text-danger fw-bold">{{ phoneme_ }}</span>
-                                                    {% else %}
+                                                    {%- else %}
                                                         {{ phoneme_ }}
-                                                    {% endif %}
+                                                    {%- endif -%}
                                                 {% endfor %}
                                             </td>
                                         </tr>
@@ -103,24 +104,38 @@
 
                                 <h6 class="mt-5">Recording:</h6>
                                 {% if loop.index == 1 %}
-                                    <div id="waveform"></div>
-                                {% endif %}
+                                    {#                                    <div id="waveform"></div>#}
 
-                                <div class="row justify-content-between">
-                                    <div class="col-auto">
-                                        <button class="btn btn-primary fixed-btn">Record</button>
-                                    </div>
-                                    {% if loop.index == 1 %}
-                                        <div class="col-auto text-end">
-                                            <button class="btn btn-success fixed-btn fw-bold" id="play_btn">
-                                                Play
+                                    <div class="stopwatch"></div>
+
+                                    <p>
+                                        <button class="visually-hidden" id=startRecord>start</button>
+                                        <button class="visually-hidden" id=stopRecord disabled>stop</button>
+                                    </p>
+
+                                    <div class="row justify-content-between" style="height: 60px;">
+                                        <div class="col pt-3">
+                                            <button class="btn btn-primary fixed-btn record-audio">
+                                                Record
                                             </button>
-                                            <button class="btn btn-secondary fixed-btn fw-bold" id="pause_btn">
-                                                Pause
-                                            </button>
+                                            <span class="text-muted ms-2">Hold to record</span>
                                         </div>
-                                    {% endif %}
-                                </div>
+                                        {% if loop.index == 1 %}
+                                            <div class="col-auto text-end">
+                                                <audio class="me-3" id=recordedAudio></audio>
+                                                <button class="btn btn-success mb-5 visually-hidden"
+                                                        id="save-recording">Save
+                                                </button>
+                                                {#                                                <button class="btn btn-success fixed-btn fw-bold" id="play_btn">#}
+                                                {#                                                    Play#}
+                                                {#                                                </button>#}
+                                                {#                                                <button class="btn btn-secondary fixed-btn fw-bold" id="pause_btn">#}
+                                                {#                                                    Pause#}
+                                                {#                                                </button>#}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -151,52 +166,223 @@
 
             // Phoneme Navigation
 
-
             // Audio:
             let play_btn = $("#play_btn");
             let pause_btn = $("#pause_btn");
 
-            let wavesurfer = WaveSurfer.create({
-                container: '#waveform',
-                waveColor: 'white',
-                progressColor: '#d64933',
-                hideScrollbar: true
+            {#let wavesurfer = WaveSurfer.create({#}
+            {#    container: '#waveform',#}
+            {#    waveColor: 'white',#}
+            {#    progressColor: '#d64933',#}
+            {#    hideScrollbar: true#}
+            {# });#}
+            {##}
+            {#wavesurfer.load("{{ url_for("static", filename="media/waves_and_seagulls.wav") }}");#}
+            {#wavesurfer.on("finish", function () {#}
+            {#    toggle_play_buttons();#}
+            {# });#}
+            {##}
+            {#play_btn.click(function () {#}
+            {#    if (!wavesurfer.isPlaying())#}
+            {#        play_audio();#}
+            {# });#}
+            {##}
+            {#pause_btn.click(function () {#}
+            {#    if (wavesurfer.isPlaying())#}
+            {#        pause_audio();#}
+            {# });#}
+            {##}
+            {#function play_audio() {#}
+            {#    wavesurfer.play();#}
+            {#    toggle_play_buttons();#}
+            {# }#}
+            {##}
+            {#function pause_audio() {#}
+            {#    wavesurfer.pause();#}
+            {#    toggle_play_buttons();#}
+            {# }#}
+            {##}
+            {#            function toggle_play_buttons() {#}
+            {#                if (play_btn.hasClass("btn-success")) {#}
+            {#                    play_btn.removeClass("btn-success").addClass("btn-secondary");#}
+            {#                    pause_btn.removeClass("btn-secondary").addClass("btn-success");#}
+            {#                } else {#}
+            {#                    play_btn.removeClass("btn-secondary").addClass("btn-success");#}
+            {#                    pause_btn.removeClass("btn-success").addClass("btn-secondary");#}
+            {#                }#}
+            {#            }#}
+
+            let record_btn = $(".record-audio");
+            let timer = new Stopwatch($(".stopwatch")[0], {delay: 10});
+            let start_record = $("#startRecord");  // hidden btn
+            let stop_record = $("#stopRecord");  // hidden btn
+            let save_record = $("#save-recording");
+
+            record_btn.on('mousedown', function (event) {
+                timer.reset();
+                timer.start();
+                start_record.trigger("click");
             });
 
-            wavesurfer.load("{{ url_for("static", filename="media/waves_and_seagulls.wav") }}");
-            wavesurfer.on("finish", function () {
-                toggle_play_buttons();
+            record_btn.on('mouseup', function (event) {
+                timer.stop();
+                stop_record.trigger("click");
+                save_record.removeClass("visually-hidden");
+            })
+
+        });
+    </script>
+
+    {# TODO: put the scripts below into their own files #}
+    <script>
+        // Credit to Maksim, https://jsfiddle.net/bomzj/beap6n2g/
+        const audioInputSelect = document.querySelector('select#audioSource');
+        const selectors = [audioInputSelect];
+
+        function gotDevices(deviceInfos) {
+            // Handles being called several times to update labels. Preserve values.
+            const values = selectors.map(select => select.value);
+            selectors.forEach(select => {
+                while (select.firstChild) {
+                    select.removeChild(select.firstChild);
+                }
             });
-
-            play_btn.click(function () {
-                if (!wavesurfer.isPlaying())
-                    play_audio();
-            });
-
-            pause_btn.click(function () {
-                if (wavesurfer.isPlaying())
-                    pause_audio();
-            });
-
-            function play_audio() {
-                wavesurfer.play();
-                toggle_play_buttons();
-            }
-
-            function pause_audio() {
-                wavesurfer.pause();
-                toggle_play_buttons();
-            }
-
-            function toggle_play_buttons() {
-                if (play_btn.hasClass("btn-success")) {
-                    play_btn.removeClass("btn-success").addClass("btn-secondary");
-                    pause_btn.removeClass("btn-secondary").addClass("btn-success");
-                } else {
-                    play_btn.removeClass("btn-secondary").addClass("btn-success");
-                    pause_btn.removeClass("btn-success").addClass("btn-secondary");
+            for (let i = 0; i !== deviceInfos.length; ++i) {
+                const deviceInfo = deviceInfos[i];
+                const option = document.createElement('option');
+                option.value = deviceInfo.deviceId;
+                if (deviceInfo.kind === 'audioinput') {
+                    option.text = deviceInfo.label || `microphone ${audioInputSelect.length + 1}`;
+                    audioInputSelect.appendChild(option);
                 }
             }
-        });
+            selectors.forEach((select, selectorIndex) => {
+                if (Array.prototype.slice.call(select.childNodes).some(n => n.value === values[selectorIndex])) {
+                    select.value = values[selectorIndex];
+                }
+            });
+        }
+
+        function gotStream(stream) {
+            window.stream = stream; // make stream available to console
+
+            rec = new MediaRecorder(stream);
+            rec.ondataavailable = e => {
+                audioChunks.push(e.data);
+                if (rec.state === "inactive") {
+                    let blob = new Blob(audioChunks, {type: 'audio/x-mpeg-3'});
+                    recordedAudio.src = URL.createObjectURL(blob);
+                    recordedAudio.controls = true;
+                    recordedAudio.autoplay = true;
+                    audioDownload.href = recordedAudio.src;
+                    audioDownload.download = 'mp3';
+                    audioDownload.innerHTML = 'download';
+                }
+            }
+        }
+
+        function handleError(error) {
+            console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
+        }
+
+        function start() {
+            // Second call to getUserMedia() with changed device may cause error, so we need to release stream before changing device
+            if (window.stream) {
+                stream.getAudioTracks()[0].stop();
+            }
+
+            const audioSource = audioInputSelect.value;
+
+            const constraints = {
+                audio: {deviceId: audioSource ? {exact: audioSource} : undefined}
+            };
+
+            navigator.mediaDevices.getUserMedia(constraints).then(gotStream).catch(handleError);
+        }
+
+        audioInputSelect.onchange = start;
+
+        startRecord.onclick = e => {
+            startRecord.disabled = true;
+            stopRecord.disabled = false;
+            audioChunks = [];
+            rec.start();
+        }
+        stopRecord.onclick = e => {
+            startRecord.disabled = false;
+            stopRecord.disabled = true;
+            rec.stop();
+        }
+
+        navigator.mediaDevices.enumerateDevices()
+            .then(gotDevices)
+            .then(start)
+            .catch(handleError);
+    </script>
+    <script>
+        // Adapted from code by Macek, https://stackoverflow.com/questions/20318822/how-to-create-a-stopwatch-using-javascript
+        let Stopwatch = function (elem, options) {
+
+            let timer = createTimer(),
+                offset,
+                clock,
+                interval;
+
+            // default options
+            options = options || {};
+            options.delay = options.delay || 1;
+
+            // append elements
+            elem.appendChild(timer);
+
+            // initialize
+            reset();
+
+            // private functions
+            function createTimer() {
+                return document.createElement("span");
+            }
+
+            function start() {
+                if (!interval) {
+                    offset = Date.now();
+                    interval = setInterval(update, options.delay);
+                }
+            }
+
+            function stop() {
+                if (interval) {
+                    clearInterval(interval);
+                    interval = null;
+                }
+            }
+
+            function reset() {
+                clock = 0;
+                render(0);
+            }
+
+            function update() {
+                clock += delta();
+                render();
+            }
+
+            function render() {
+                timer.innerHTML = (Math.round(clock / 1000 * 100) / 100).toFixed(2);
+            }
+
+            function delta() {
+                let now = Date.now(),
+                    d = now - offset;
+
+                offset = now;
+                return d;
+            }
+
+            // public API
+            this.start = start;
+            this.stop = stop;
+            this.reset = reset;
+        };
     </script>
 {% endblock extra_js %}
