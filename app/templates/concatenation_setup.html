@@ -90,9 +90,9 @@
                                             </td>
                                             <td>
                                                 {% for phoneme_ in item[1] %}
-                                                    {%- if phoneme_ == phoneme -%}
+                                                    {% if phoneme_ == phoneme -%}
                                                         <span class="text-danger fw-bold">{{ phoneme_ }}</span>
-                                                    {%- else %}
+                                                    {% else %}
                                                         {{ phoneme_ }}
                                                     {%- endif -%}
                                                 {% endfor %}
