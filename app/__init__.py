@@ -1,4 +1,6 @@
-from flask import Flask, render_template, redirect, url_for
+import os
+
+from flask import Flask, redirect, url_for
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
@@ -17,6 +19,10 @@ def create_app(config_class=Config):
     db.init_app(app)
     migrate.init_app(app, db, config_class.MIGRATIONS_DIR)
 
+    recording_dir = os.path.join("app", "static", "recording")
+    if not os.path.isdir(recording_dir):
+        os.mkdir(recording_dir)
+
     app.words = get_words()
     app.phoneme_dict = {phoneme_word: [(word, app.words[word.upper()]) for word in phoneme_words[phoneme_word] if word]
                         for phoneme_word in phoneme_words}
@@ -31,21 +37,7 @@ def create_app(config_class=Config):
     app.add_url_rule("/site_webmanifest", "site_webmanifest",
                      lambda: redirect(url_for("static", filename="favicon/site.webmanifest")))
 
-    @app.route('/')
-    @app.route('/index')
-    def index():
-        return redirect(url_for("synthesiser"))
-
-    @app.route('/synthesiser')
-    def synthesiser():
-        return render_template("synthesiser.html")
-
-    @app.route('/concatenation_setup')
-    def concatenation_setup():
-        return render_template("concatenation_setup.html", phoneme_dict=app.phoneme_dict)
-
-    @app.route('/ml_setup')
-    def ml_setup():
-        return render_template("ml_setup.html")
+    from app.routes import bp
+    app.register_blueprint(bp)
 
     return app
