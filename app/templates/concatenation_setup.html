@@ -47,7 +47,7 @@
                                 <a class="nav-link {% if loop.index == 1 %}active{% endif %}"
                                    id="phoneme-tab-{{ loop.index }}" data-bs-toggle="pill"
                                    href="#phoneme-{{ loop.index }}" role="tab" aria-controls="phoneme-{{ loop.index }}"
-                                   {% if loop.index == 1 %}aria-selected="true"{% endif %}>
+                                   {%- if loop.index == 1 %}aria-selected="true"{% endif %}>
 
                                     <span class="me-2">
                                         <i class="fa {% if 2 < loop.index < 6 %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} me-2"></i>
@@ -89,13 +89,14 @@
                                                 {%- endfor %}
                                             </td>
                                             <td>
-                                                {% for phoneme_ in item[1] %}
-                                                    {% if phoneme_ == phoneme -%}
-                                                        <span class="text-danger fw-bold">{{ phoneme_ }}</span>
-                                                    {% else %}
-                                                        {{ phoneme_ }}
+                                                {% for phoneme_ in item[1] -%}
+                                                    {%- if phoneme_ == phoneme -%}
+                                                        <span class="text-danger fw-bold">{{- phoneme_ -}}</span>
+                                                    {%- else -%}
+                                                        {{- phoneme_ -}}
                                                     {%- endif -%}
-                                                {% endfor %}
+                                                    &nbsp;
+                                                {%- endfor %}
                                             </td>
                                         </tr>
                                     {% endfor %}
