@@ -197,8 +197,7 @@ hr {
 
 .stopwatch {
     font-family: 'Courier New', monospace;
-    text-align: center;
-    margin: 1em;
-    font-size: xx-large;
+    margin: 0 1em;
+    font-size: x-large;
     font-weight: bold;
 }

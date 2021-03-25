@@ -63,6 +63,12 @@
             </div>
         </div>
 
+        {# TODO: position elsewhere and make available to end-user #}
+        <div class="visually-hidden">
+            <label for="audioSource">Audio input source: </label>
+            <select class="form-select mb-2" id="audioSource"></select>
+        </div>
+
         <div class="col h-100">
             <div class="tab-content" id="phonemes-tab-content">
                 {% for phoneme in phoneme_dict %}
@@ -107,43 +113,33 @@
                                 </table>
 
                                 <h6 class="mt-5">Recording:</h6>
-                                {% if loop.index == 1 %}
-                                    {#                                    <div id="waveform"></div>#}
+                                {#                                    <div id="waveform"></div>#}
 
-                                    <div class="stopwatch"></div>
+                                <div class="row justify-content-between" style="height: 60px;">
+                                    <div class="col pt-3">
+                                        <button class="btn btn-primary fixed-btn record-audio">
+                                            Record
+                                        </button>
 
-                                    <div class="visually-hidden">
-                                        <label for="audioSource">Audio input source: </label>
-                                        <select class="form-select mb-2" id="audioSource"></select>
-                                        <p>
-                                            <button id=startRecord>start</button>
-                                            <button id=stopRecord disabled>stop</button>
-                                        </p>
-                                    </div>
-
-                                    <div class="row justify-content-between" style="height: 60px;">
-                                        <div class="col pt-3">
-                                            <button class="btn btn-primary fixed-btn record-audio">
-                                                Record
-                                            </button>
-                                            <span class="text-muted ms-2">Hold to record</span>
+                                        <div class="d-inline-block">
+                                            <span class="hold-msg text-muted ms-2">Hold to record</span>
+                                            <div class="stopwatch"></div>
                                         </div>
-                                        {% if loop.index == 1 %}
-                                            <div class="col-auto text-end">
-                                                <audio class="me-3" id=recordedAudio></audio>
-                                                <button class="btn btn-success mb-5 visually-hidden"
-                                                        id="save-recording">Save
-                                                </button>
-                                                {#                                                <button class="btn btn-success fixed-btn fw-bold" id="play_btn">#}
-                                                {#                                                    Play#}
-                                                {#                                                </button>#}
-                                                {#                                                <button class="btn btn-secondary fixed-btn fw-bold" id="pause_btn">#}
-                                                {#                                                    Pause#}
-                                                {#                                                </button>#}
-                                            </div>
-                                        {% endif %}
+
                                     </div>
-                                {% endif %}
+                                    <div class="col-auto text-end recording-results visually-hidden">
+                                        <audio class="me-3 recordedAudio"></audio>
+                                        <button class="btn btn-success mb-5 save-recording">
+                                            Save
+                                        </button>
+                                        {#                                                <button class="btn btn-success fixed-btn fw-bold" id="play_btn">#}
+                                        {#                                                    Play#}
+                                        {#                                                </button>#}
+                                        {#                                                <button class="btn btn-secondary fixed-btn fw-bold" id="pause_btn">#}
+                                        {#                                                    Pause#}
+                                        {#                                                </button>#}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -220,30 +216,43 @@
             {#                }#}
             {#            }#}
 
-            let record_btn = $(".record-audio");
-            let timer = new Stopwatch($(".stopwatch")[0], {delay: 10});
-            let start_record = $("#startRecord");  // hidden btn
-            let stop_record = $("#stopRecord");  // hidden btn
-            let save_record = $("#save-recording");
 
-            record_btn.on('mousedown', function (event) {
+            {#$(".tab-pane").on("shown.bs.tab", function () {#}
+            {#    console.log(123);#}
+            {#    let timer = new Stopwatch($(".stopwatch")[0], {delay: 10});#}
+            {# })#}
+
+            let record_btn = $(".record-audio");
+            let save_record = $(".save-recording");
+            let timer;
+
+            record_btn.on('mousedown', function () {
+                let active_tab = $(".tab-pane.active");
+
+                active_tab.find(".hold-msg").addClass("d-none");
+
+                let stopwatch = active_tab.find(".stopwatch");
+                if (!stopwatch.hasClass("started"))
+                    timer = new Stopwatch(stopwatch[0], {delay: 10});
+
                 timer.reset();
                 timer.start();
-                start_record.trigger("click");
-            });
+                start_recording();
+                stopwatch.addClass("started");
+                active_tab.find(".recording-results").addClass("visually-hidden");
 
-            record_btn.on('mouseup', function (event) {
-                timer.stop();
-                stop_record.trigger("click");
-                save_record.removeClass("visually-hidden");
+                record_btn.on('mouseup', function () {
+                    timer.stop();
+                    stop_recording();
+                    active_tab.find(".recording-results").removeClass("visually-hidden");
+                });
             });
 
             save_record.on("click", function () {
-                let tab = $(this).parent().parent().parent().parent().parent();
+                let tab = $(".tab-pane.active");
 
                 uploadAudioFromBlob(tab.attr("data-phoneme-name"), tab.attr("data-phoneme-num"), window.audio_blob);
             })
-
         });
     </script>
 
@@ -315,12 +324,14 @@
                 audioChunks.push(e.data);
                 if (rec.state === "inactive") {
                     let blob = new Blob(audioChunks, {type: 'audio/x-mpeg-3'});
+                    let recordedAudio = $(".tab-pane.active").find(".recordedAudio")[0];
+
                     recordedAudio.src = URL.createObjectURL(blob);
                     recordedAudio.controls = true;
                     recordedAudio.autoplay = true;
                     audioDownload.href = recordedAudio.src;
                     audioDownload.download = 'mp3';
-                    audioDownload.innerHTML = 'downloadaa';
+                    audioDownload.innerHTML = 'download';
 
                     window.audio_blob = blob;
                 }
@@ -348,16 +359,14 @@
 
         audioInputSelect.onchange = start;
 
-        startRecord.onclick = e => {
-            startRecord.disabled = true;
-            stopRecord.disabled = false;
+        function start_recording() {
             audioChunks = [];
             rec.start();
         }
-        stopRecord.onclick = e => {
-            startRecord.disabled = false;
-            stopRecord.disabled = true;
-            rec.stop();
+
+        function stop_recording() {
+            if (rec.state !== "inactive")
+                rec.stop();
         }
 
         navigator.mediaDevices.enumerateDevices()
