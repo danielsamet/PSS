@@ -5,7 +5,7 @@ import os
 from flask import current_app, redirect, url_for, render_template, Blueprint, jsonify, request
 
 from app import db
-from app.models import PhonemeRecording
+from app.models import PhonemeRecording, Phoneme
 
 bp = Blueprint('main', __name__, url_prefix="/")
 
@@ -23,7 +23,7 @@ def synthesiser():
 
 @bp.route('/concatenation_setup')
 def concatenation_setup():
-    return render_template("concatenation_setup.html", phoneme_dict=current_app.phoneme_dict)
+    return render_template("concatenation_setup.html", phonemes=Phoneme.query.all())
 
 
 @bp.route('/ml_setup')
@@ -33,13 +33,13 @@ def ml_setup():
 
 @bp.route("/save_recording", methods=["POST"])
 def save_recording():
-    symbol = request.form.get("phoneme_name", "", str)
-    phoneme_num = request.form.get("phoneme_num", 0, int)
+    phoneme_id = request.form.get("phoneme_id", 0, int)
+    phoneme = Phoneme.query.filter_by(id=phoneme_id).first()
 
-    if not 1 <= phoneme_num <= 84:
-        return jsonify({"msg": "Phoneme number out of range."}), 400
+    if not phoneme:
+        return jsonify({"msg": "Unknown phoneme id supplied!"}), 400
 
-    file_address = os.path.join(current_app.config.get("STATIC_DIR"), "recording", f"{phoneme_num}.mp3")
+    file_address = os.path.join(current_app.config.get("STATIC_DIR"), "recording", f"{phoneme.number}.mp3")
 
     try:
         audio_stream = request.form.get("audio", "", str).replace("audio/x-mpeg-3;base64,", "")
@@ -50,8 +50,8 @@ def save_recording():
     except (OSError, binascii.Error):
         return jsonify({"msg": "Recording could not be saved successfully!"}), 400
 
-    if not PhonemeRecording.query.filter_by(number=phoneme_num).first():
-        db.session.add(PhonemeRecording(symbol, phoneme_num, file_address))
+    if not phoneme.recording:
+        phoneme.recording = PhonemeRecording(file_address)
         db.session.commit()
 
     return jsonify({"msg": "Recording successfully saved!"}), 200

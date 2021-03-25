@@ -43,17 +43,18 @@
                     <div class="d-flex align-items-start">
                         <div class="nav flex-column nav-pills pe-2" id="phonemes-tab" role="tablist">
 
-                            {% for phoneme in phoneme_dict %}
-                                <a class="nav-link {% if loop.index == 1 %}active{% endif %}"
-                                   id="phoneme-tab-{{ loop.index }}" data-bs-toggle="pill"
-                                   href="#phoneme-{{ loop.index }}" role="tab" aria-controls="phoneme-{{ loop.index }}"
-                                   {%- if loop.index == 1 %}aria-selected="true"{% endif %}>
+                            {% for phoneme in phonemes %}
+                                <a class="nav-link {% if phoneme.number == 1 %}active{% endif %}"
+                                   id="phoneme-tab-{{ phoneme.number }}" data-bs-toggle="pill"
+                                   href="#phoneme-{{ phoneme.number }}" role="tab"
+                                   aria-controls="phoneme-{{ phoneme.number }}"
+                                   {%- if phoneme.number == 1 %}aria-selected="true"{% endif %}>
 
                                     <span class="me-2">
-                                        <i class="fa {% if 2 < loop.index < 6 %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} me-2"></i>
-                                        Phoneme {{ loop.index }}:
+                                        <i class="fa {% if phoneme.recording %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} me-2"></i>
+                                        Phoneme {{ phoneme.number }}:
                                     </span>
-                                    <span class="float-end">{{ phoneme }}</span>
+                                    <span class="float-end">{{ phoneme.symbol }}</span>
                                 </a>
                             {% endfor %}
 
@@ -71,16 +72,17 @@
 
         <div class="col h-100">
             <div class="tab-content" id="phonemes-tab-content">
-                {% for phoneme in phoneme_dict %}
+                {% for phoneme in phonemes %}
                     <div class="tab-pane fade {% if loop.index == 1 %}show active{% endif %}"
                          id="phoneme-{{ loop.index }}"
                          role="tabpanel"
-                         data-phoneme-name="{{ phoneme }}"
+                         data-phoneme-name="{{ phoneme.symbol }}"
                          data-phoneme-num="{{ loop.index }}"
+                         data-phoneme-id="{{ phoneme.id }}"
                          aria-labelledby="phoneme-tab-{{ loop.index }}">
                         <div class="card bg-item h-100">
                             <div class="card-header border-white">
-                                <h4 class="fw-bold">Phoneme {{ loop.index }}: {{ phoneme }}</h4>
+                                <h4 class="fw-bold">Phoneme {{ loop.index }}: {{ phoneme.symbol }}</h4>
                             </div>
                             <div class="card-body">
                                 <h6 class="mb-3">Examples for this phoneme:</h6>
@@ -88,17 +90,17 @@
                                 <table class="table table-bordered text-white text-center mx-auto"
                                        style="max-width: 30em;">
                                     <tbody>
-                                    {% for item in phoneme_dict[phoneme] %}
+                                    {% for example in phoneme.examples %}
                                         <tr>
                                             <td class="font-monospace bg-white text-dark">
-                                                {% for char in item[0] -%}
+                                                {% for char in example.word -%}
                                                     <span {% if char.isupper() %}class="text-danger fw-bold"{% endif %}>
                                                         {{- char.lower().replace("(1)", "") -}}
                                                     </span>
                                                 {%- endfor %}
                                             </td>
                                             <td>
-                                                {% for phoneme_ in item[1] -%}
+                                                {% for phoneme_ in example.phoneme_breakdown -%}
                                                     {%- if phoneme_ == phoneme -%}
                                                         <span class="text-danger fw-bold">{{- phoneme_ -}}</span>
                                                     {%- else -%}
@@ -152,6 +154,18 @@
 {% block extra_js %}
     <script src="{{ url_for("static", filename="js/wavesurfer.min.js") }}"></script>
     <script>
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        })
+
         window.addEventListener('DOMContentLoaded', () => {
             // Description Collapse
             let description_header = $("#description-header");
@@ -251,20 +265,27 @@
             save_record.on("click", function () {
                 let tab = $(".tab-pane.active");
 
-                uploadAudioFromBlob(tab.attr("data-phoneme-name"), tab.attr("data-phoneme-num"), window.audio_blob);
+                uploadAudioFromBlob(tab.attr("data-phoneme-id"), window.audio_blob);
+
+                // update tab to recorded
+                $("#phoneme-tab-" + tab.attr("data-phoneme-num")).find("i").removeClass("fa-exclamation-circle").addClass("fa-check-circle");
+
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Successfully saved recording!'
+                })
             })
         });
     </script>
 
     {# TODO: put the scripts below into their own files #}
     <script>
-        function uploadAudioFromBlob(phoneme_name, phoneme_num, blob) {
+        function uploadAudioFromBlob(phoneme_id, blob) {
             let reader = new FileReader();
 
             reader.onload = function (event) {
                 let formData = new FormData();
-                formData.append('phoneme_name', phoneme_name);
-                formData.append('phoneme_num', phoneme_num);
+                formData.append('phoneme_id', phoneme_id);
                 formData.append('audio', event.target.result);
                 $.ajax({
                     type: 'POST',

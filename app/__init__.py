@@ -12,20 +12,19 @@ migrate = Migrate()
 db = SQLAlchemy()
 
 
-def create_app(config_class=Config):
+def create_app(config_class=Config, skip_dir_building=False):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
     db.init_app(app)
     migrate.init_app(app, db, config_class.MIGRATIONS_DIR)
 
-    recording_dir = os.path.join("app", "static", "recording")
-    if not os.path.isdir(recording_dir):
-        os.mkdir(recording_dir)
+    if not skip_dir_building:
+        recording_dir = os.path.join("app", "static", "recording")
+        if not os.path.isdir(recording_dir):
+            os.mkdir(recording_dir)
 
     app.words = get_words()
-    app.phoneme_dict = {phoneme_word: [(word, app.words[word.upper()]) for word in phoneme_words[phoneme_word] if word]
-                        for phoneme_word in phoneme_words}
 
     app.add_url_rule("/favicon", "favicon", lambda: redirect(url_for("static", filename="favicon/favicon.ico")))
     app.add_url_rule("/favicon-16x16", "favicon-16x16",
@@ -39,5 +38,12 @@ def create_app(config_class=Config):
 
     from app.routes import bp
     app.register_blueprint(bp)
+
+    @app.shell_context_processor  # adds automatic context to the shell
+    def make_shell_context():
+        from app.models import Phoneme, PhonemeExample, PhonemeRecording
+
+        return dict(app=app, db=db,
+                    Phoneme=Phoneme, PhonemeExample=PhonemeExample, PhonemeRecording=PhonemeRecording)
 
     return app
