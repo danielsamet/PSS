@@ -6,14 +6,14 @@ class PhonemeRecording(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    phoneme = db.Column(db.String(3), nullable=False)
+    symbol = db.Column(db.String(3), nullable=False)
     number = db.Column(db.Integer)
     recording_address = db.Column(db.String(2048))
 
-    def __init__(self, phoneme, number, recording_address):
-        self.phoneme = phoneme
+    def __init__(self, symbol, number, recording_address):
+        self.symbol = symbol
         self.number = number
         self.recording_address = recording_address
 
     def __repr__(self):
-        return f"<PhonemeRecording {self.number}:{self.phoneme}>"
+        return f"<PhonemeRecording {self.number}:{self.symbol}>"
