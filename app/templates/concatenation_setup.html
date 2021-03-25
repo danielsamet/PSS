@@ -67,7 +67,10 @@
             <div class="tab-content" id="phonemes-tab-content">
                 {% for phoneme in phoneme_dict %}
                     <div class="tab-pane fade {% if loop.index == 1 %}show active{% endif %}"
-                         id="phoneme-{{ loop.index }}" role="tabpanel"
+                         id="phoneme-{{ loop.index }}"
+                         role="tabpanel"
+                         data-phoneme-name="{{ phoneme }}"
+                         data-phoneme-num="{{ loop.index }}"
                          aria-labelledby="phoneme-tab-{{ loop.index }}">
                         <div class="card bg-item h-100">
                             <div class="card-header border-white">
@@ -109,10 +112,14 @@
 
                                     <div class="stopwatch"></div>
 
-                                    <p>
-                                        <button class="visually-hidden" id=startRecord>start</button>
-                                        <button class="visually-hidden" id=stopRecord disabled>stop</button>
-                                    </p>
+                                    <div class="visually-hidden">
+                                        <label for="audioSource">Audio input source: </label>
+                                        <select class="form-select mb-2" id="audioSource"></select>
+                                        <p>
+                                            <button id=startRecord>start</button>
+                                            <button id=stopRecord disabled>stop</button>
+                                        </p>
+                                    </div>
 
                                     <div class="row justify-content-between" style="height: 60px;">
                                         <div class="col pt-3">
@@ -229,6 +236,12 @@
                 timer.stop();
                 stop_record.trigger("click");
                 save_record.removeClass("visually-hidden");
+            });
+
+            save_record.on("click", function () {
+                let tab = $(this).parent().parent().parent().parent().parent();
+
+                uploadAudioFromBlob(tab.attr("data-phoneme-name"), tab.attr("data-phoneme-num"), window.audio_blob);
             })
 
         });
@@ -236,9 +249,38 @@
 
     {# TODO: put the scripts below into their own files #}
     <script>
-        // Credit to Maksim, https://jsfiddle.net/bomzj/beap6n2g/
+        function uploadAudioFromBlob(phoneme_name, phoneme_num, blob) {
+            let reader = new FileReader();
+
+            reader.onload = function (event) {
+                let formData = new FormData();
+                formData.append('phoneme_name', phoneme_name);
+                formData.append('phoneme_num', phoneme_num);
+                formData.append('audio', event.target.result);
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ url_for("main.save_recording") }}',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    dataType: 'json',
+                    cache: false,
+
+                    success: function (json) {
+                    }, error: function (jqXHR, textStatus, errorThrown) {
+                        alert('Error! ' + textStatus + ' - ' + errorThrown + '\n\n' + jqXHR.responseText);
+                    }
+                });
+            }
+            reader.readAsDataURL(blob);
+        }
+
+        // Adapted from code by Maksim, https://jsfiddle.net/bomzj/beap6n2g/
         const audioInputSelect = document.querySelector('select#audioSource');
         const selectors = [audioInputSelect];
+
+        let rec;
+        let audioChunks;
 
         function gotDevices(deviceInfos) {
             // Handles being called several times to update labels. Preserve values.
@@ -266,6 +308,7 @@
 
         function gotStream(stream) {
             window.stream = stream; // make stream available to console
+            let audioDownload = Object;
 
             rec = new MediaRecorder(stream);
             rec.ondataavailable = e => {
@@ -277,7 +320,9 @@
                     recordedAudio.autoplay = true;
                     audioDownload.href = recordedAudio.src;
                     audioDownload.download = 'mp3';
-                    audioDownload.innerHTML = 'download';
+                    audioDownload.innerHTML = 'downloadaa';
+
+                    window.audio_blob = blob;
                 }
             }
         }
