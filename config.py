@@ -10,3 +10,6 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     STATIC_DIR = os.path.join(basedir, "app", "static")
+
+    AUDIO_MIME_TYPE = "audio/wav"
+    AUDIO_FILE_EXT = "wav"

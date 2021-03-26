@@ -39,10 +39,13 @@ def save_recording():
     if not phoneme:
         return jsonify({"msg": "Unknown phoneme id supplied!"}), 400
 
-    file_address = os.path.join(current_app.config.get("STATIC_DIR"), "recording", f"{phoneme.number}.mp3")
+    file_name = f"{phoneme.number}.{current_app.config.get('AUDIO_FILE_EXT')}"
+    file_relative_address = "recording"
+    file_address = os.path.join(current_app.config.get("STATIC_DIR"), file_relative_address, file_name)
 
     try:
-        audio_stream = request.form.get("audio", "", str).replace("audio/x-mpeg-3;base64,", "")
+        audio_stream = request.form.get("audio", "", str)
+        audio_stream = audio_stream.replace(f"data:{current_app.config.get('AUDIO_MIME_TYPE')};base64,", "")
         audio_binary = base64.decodebytes(audio_stream.encode("utf-8"))
         with open(file_address, "wb") as file:
             file.write(audio_binary)
@@ -51,7 +54,7 @@ def save_recording():
         return jsonify({"msg": "Recording could not be saved successfully!"}), 400
 
     if not phoneme.recording:
-        phoneme.recording = PhonemeRecording(file_address)
+        phoneme.recording = PhonemeRecording(file_relative_address, file_name)
         db.session.commit()
 
     return jsonify({"msg": "Recording successfully saved!"}), 200

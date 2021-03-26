@@ -1,3 +1,7 @@
+import os
+
+from flask import url_for
+
 from app import db
 
 
@@ -46,12 +50,23 @@ class PhonemeRecording(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    recording_address = db.Column(db.String(2048))
+    relative_dir = db.Column(db.String(2048))
+    name = db.Column(db.String(32))
 
-    phoneme = db.relationship("Phoneme", back_populates="recording")
+    phoneme = db.relationship("Phoneme", back_populates="recording", uselist=False)
 
-    def __init__(self, recording_address):
-        self.recording_address = recording_address
+    def __init__(self, relative_dir, name):
+        self.relative_dir = relative_dir
+        self.name = name
 
     def __repr__(self):
         return f"<PhonemeRecording {self.phoneme}:{self.id}>"
+
+    @property
+    def local_address(self):
+        # TODO: update this
+        return os.path.join(self.relative_dir, self.name)
+
+    @property
+    def web_address(self):
+        return url_for("static", filename=os.path.join(self.relative_dir, self.name).replace("\\", "/"))

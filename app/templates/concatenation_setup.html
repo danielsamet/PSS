@@ -129,9 +129,18 @@
                                         </div>
 
                                     </div>
-                                    <div class="col-auto text-end recording-results visually-hidden">
-                                        <audio class="me-3 recordedAudio"></audio>
-                                        <button class="btn btn-success mb-5 save-recording">
+                                    <div class="col-auto text-end recording-results">
+
+                                        {% if phoneme.recording %}
+                                            <audio class="me-3 recordedAudio" controls>
+                                                <source src="{{ phoneme.recording.web_address|safe }}"
+                                                        type="{{ config.get("AUDIO_MIME_TYPE") }}">
+                                                Your browser does not support the audio element.
+                                            </audio>
+                                        {% else %}
+                                            <audio class="me-3 recordedAudio"></audio>
+                                        {% endif %}
+                                        <button class="btn btn-success mb-5 save-recording visually-hidden">
                                             Save
                                         </button>
                                         {#                                                <button class="btn btn-success fixed-btn fw-bold" id="play_btn">#}
@@ -254,11 +263,13 @@
                 start_recording();
                 stopwatch.addClass("started");
                 active_tab.find(".recording-results").addClass("visually-hidden");
+                active_tab.find(".save-recording").addClass("visually-hidden");
 
                 record_btn.on('mouseup', function () {
                     timer.stop();
                     stop_recording();
                     active_tab.find(".recording-results").removeClass("visually-hidden");
+                    active_tab.find(".save-recording").removeClass("visually-hidden");
                 });
             });
 
@@ -340,18 +351,18 @@
             window.stream = stream; // make stream available to console
             let audioDownload = Object;
 
-            rec = new MediaRecorder(stream);
+            rec = new MediaRecorder(stream, {MimeType: "{{ config.get("AUDIO_MIME_TYPE") }}"});
             rec.ondataavailable = e => {
                 audioChunks.push(e.data);
                 if (rec.state === "inactive") {
-                    let blob = new Blob(audioChunks, {type: 'audio/x-mpeg-3'});
+                    let blob = new Blob(audioChunks, {type: '{{ config.get("AUDIO_MIME_TYPE") }}'});
                     let recordedAudio = $(".tab-pane.active").find(".recordedAudio")[0];
 
                     recordedAudio.src = URL.createObjectURL(blob);
                     recordedAudio.controls = true;
                     recordedAudio.autoplay = true;
                     audioDownload.href = recordedAudio.src;
-                    audioDownload.download = 'mp3';
+                    audioDownload.download = '{{ config.get("AUDIO_FILE_EXT") }}';
                     audioDownload.innerHTML = 'download';
 
                     window.audio_blob = blob;
