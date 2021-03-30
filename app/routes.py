@@ -55,6 +55,9 @@ def save_recording():
 
     if not phoneme.recording:
         phoneme.recording = PhonemeRecording(file_relative_address, file_name)
-        db.session.commit()
+    else:
+        phoneme.recording.relative_dir = file_relative_address
+        phoneme.recording.name = file_name
+    db.session.commit()
 
     return jsonify({"msg": "Recording successfully saved!"}), 200

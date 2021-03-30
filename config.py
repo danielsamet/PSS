@@ -11,5 +11,5 @@ class Config:
 
     STATIC_DIR = os.path.join(basedir, "app", "static")
 
-    AUDIO_MIME_TYPE = "audio/wav"
-    AUDIO_FILE_EXT = "wav"
+    AUDIO_MIME_TYPE = "audio/webm;codecs=opus"
+    AUDIO_FILE_EXT = "webm"

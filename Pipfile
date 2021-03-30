@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 flask = "*"
 flask-migrate = "*"
+ffmpeg-python = "*"
 
 [dev-packages]
 
