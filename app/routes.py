@@ -5,6 +5,7 @@ import os
 from flask import current_app, redirect, url_for, render_template, Blueprint, jsonify, request
 
 from app import db
+from app.concatenator import tts
 from app.models import PhonemeRecording, Phoneme
 
 bp = Blueprint('main', __name__, url_prefix="/")
@@ -16,9 +17,20 @@ def index():
     return redirect(url_for("main.synthesiser"))
 
 
-@bp.route('/synthesiser')
+@bp.route('/synthesiser', methods=["GET", "POST"])
 def synthesiser():
-    return render_template("synthesiser.html")
+    if request.method == "GET":
+        return render_template("synthesiser.html")
+
+    text_input = request.form.get("text_input", "", str)
+    if not text_input:
+        return jsonify({"msg": "text cannot be empty!"}), 400
+
+    print(text_input)
+    file_address = tts(text_input)["relative_address"]
+    print(file_address)
+
+    return jsonify({"text_input": text_input, "file": file_address}), 200
 
 
 @bp.route('/concatenation_setup')

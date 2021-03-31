@@ -45,13 +45,12 @@ def parse_words(words):
     """
 
     phonemes = []
-    phoneme_map = generate_phoneme_map()
 
     for word in words:
         if word == " ":
             pass
         else:
-            for phoneme in phoneme_map[word]:
+            for phoneme in current_app.phoneme_map[word]:
                 phonemes.append(phoneme)
 
     return phonemes
@@ -72,13 +71,14 @@ def generate_audio(phonemes):
 
     if len(phonemes) > 1:
         filter_str = ";".join([f"[{index if index == 0 else f'a{index:02}'}][{index + 1}]"
-                               f"acrossfade=ns=13000:c1=tri:c2=tri"
+                               f"acrossfade=ns=17000:c1=tri:c2=tri"
                                f"[a{index + 1:02}]" for index in range(len(phonemes) - 1)])[:-5]
         filter_str = "-filter_complex \"" + filter_str + "\""
     else:
         filter_str = ""
 
-    output_dir = os.path.join(current_app.config.get("STATIC_DIR"), "recording", "output")
+    output_rel_dir = os.path.join("recording", "output")
+    output_dir = os.path.join(current_app.config.get("STATIC_DIR"), output_rel_dir)
     output_filename = ''.join(random.choices(string.ascii_letters + string.digits, k=16)) \
                       + f".{current_app.config.get('AUDIO_FILE_EXT')}"
     output_full = os.path.join(output_dir, output_filename).replace("\\", "/")
@@ -90,7 +90,10 @@ def generate_audio(phonemes):
 
     subprocess.call(execute_str)
 
-    return output_full
+    return {
+        "relative_address": os.path.join(output_rel_dir, output_filename),
+        "absolute_address": output_full
+    }
 
 
 def tts(input_text):

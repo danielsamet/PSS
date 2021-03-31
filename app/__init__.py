@@ -5,6 +5,7 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
 from app.phoneme_example_dict import phoneme_words
+from app.phoneme_map import generate_phoneme_map
 from app.utils import get_words
 from config import Config
 
@@ -25,6 +26,7 @@ def create_app(config_class=Config, skip_dir_building=False):
             os.mkdir(recording_dir)
 
     app.words = get_words()
+    app.phoneme_map = generate_phoneme_map(config_class.STATIC_DIR)
 
     app.add_url_rule("/favicon", "favicon", lambda: redirect(url_for("static", filename="favicon/favicon.ico")))
     app.add_url_rule("/favicon-16x16", "favicon-16x16",
