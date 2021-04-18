@@ -160,6 +160,7 @@
 {% block extra_js %}
     <script src="{{ url_for("static", filename="js/wavesurfer.js") }}"></script>
     <script src="{{ url_for("static", filename="js/wavesurfer.regions.js") }}"></script>
+    <script src="{{ url_for("static", filename="js/timer.js") }}"></script>
     <script>
         const Toast = Swal.mixin({
             toast: true,
@@ -211,19 +212,20 @@
                 active_tab.find(".recording-results").addClass("visually-hidden");
                 active_tab.find(".save-recording").addClass("visually-hidden");
 
-                record_btn.one('mouseup', function () {
+                record_btn.one('mouseup', async function () {
                     timer.stop();
                     stop_recording();
                     active_tab.find(".recording-results").removeClass("visually-hidden");
                     active_tab.find(".save-recording").removeClass("visually-hidden");
-                    load_audio("recording-div-" + this.id.replace("btn-", ""));
+                    await new Promise(r => setTimeout(r, 100));
+                    await load_audio("recording-div-" + this.id.replace("btn-", ""), $(".tab-pane.active").find(".recordedAudio")[0].src, true);
                 });
             });
 
             save_record.on("click", function () {
                 let tab = $(".tab-pane.active");
 
-                uploadAudioFromBlob(tab.attr("data-phoneme-id"), window.audio_blob);
+                uploadAudioFromBlob(tab.attr("data-phoneme-id"), window.audio_blob, "{{ url_for("main.save_recording") }}");
 
                 // update tab to recorded
                 $("#phoneme-tab-" + tab.attr("data-phoneme-num")).find("i").removeClass("fa-exclamation-circle").addClass("fa-check-circle");
@@ -232,10 +234,16 @@
                     icon: 'success',
                     title: 'Successfully saved recording!'
                 })
-            })
+            });
+
+            {% for phoneme in phonemes -%}
+                {%- if phoneme.recording %}
+                    load_audio("recording-div-" + {{ phoneme.id }}, "{{ phoneme.recording.web_address|safe }}", false);
+                {%- endif -%}
+            {%- endfor %}
         });
 
-        async function load_audio(container_id) {
+        async function load_audio(container_id, audio_url, with_cropping_region = false) {
             $("#" + container_id).html("");
             let wavesurfer = WaveSurfer.create({
                 container: '#' + container_id,
@@ -247,18 +255,24 @@
                 ]
             });
 
-            await new Promise(r => setTimeout(r, 100));
-            wavesurfer.load($(".tab-pane.active").find(".recordedAudio")[0].src);
+            wavesurfer.load(audio_url);
 
-            await new Promise(r => setTimeout(r, 100));
-            let duration = wavesurfer.getDuration();
-            wavesurfer.addRegion({start: duration * 2 / 5, end: duration * 3 / 5, color: 'hsla(100, 100%, 30%, 0.1)'})
+            if (!!with_cropping_region) {
+                // add region (for cropped audio) at center of recorded audio
+                await new Promise(r => setTimeout(r, 100));
+                let duration = wavesurfer.getDuration();
+                wavesurfer.addRegion({
+                    start: duration * 2 / 5,
+                    end: duration * 3 / 5,
+                    color: 'hsla(100, 100%, 30%, 0.15)'
+                });
+            }
         }
     </script>
 
-    {# TODO: put the scripts below into their own files #}
+    {# TODO: put the script below into their own files #}
     <script>
-        function uploadAudioFromBlob(phoneme_id, blob) {
+        function uploadAudioFromBlob(phoneme_id, blob, upload_address) {
             let reader = new FileReader();
 
             reader.onload = function (event) {
@@ -267,7 +281,7 @@
                 formData.append('audio', event.target.result);
                 $.ajax({
                     type: 'POST',
-                    url: '{{ url_for("main.save_recording") }}',
+                    url: upload_address,
                     data: formData,
                     processData: false,
                     contentType: false,
@@ -375,71 +389,5 @@
             .then(gotDevices)
             .then(start)
             .catch(handleError);
-    </script>
-    <script>
-        // Adapted from code by Macek, https://stackoverflow.com/questions/20318822/how-to-create-a-stopwatch-using-javascript
-        let Stopwatch = function (elem, options) {
-
-            let timer = createTimer(),
-                offset,
-                clock,
-                interval;
-
-            // default options
-            options = options || {};
-            options.delay = options.delay || 1;
-
-            // append elements
-            elem.appendChild(timer);
-
-            // initialize
-            reset();
-
-            // private functions
-            function createTimer() {
-                return document.createElement("span");
-            }
-
-            function start() {
-                if (!interval) {
-                    offset = Date.now();
-                    interval = setInterval(update, options.delay);
-                }
-            }
-
-            function stop() {
-                if (interval) {
-                    clearInterval(interval);
-                    interval = null;
-                }
-            }
-
-            function reset() {
-                clock = 0;
-                render(0);
-            }
-
-            function update() {
-                clock += delta();
-                render();
-            }
-
-            function render() {
-                timer.innerHTML = (Math.round(clock / 1000 * 100) / 100).toFixed(2);
-            }
-
-            function delta() {
-                let now = Date.now(),
-                    d = now - offset;
-
-                offset = now;
-                return d;
-            }
-
-            // public API
-            this.start = start;
-            this.stop = stop;
-            this.reset = reset;
-        };
     </script>
 {% endblock extra_js %}
