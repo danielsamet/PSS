@@ -86,8 +86,8 @@
     width: 7em;
 }
 
-wave {
-    border-right: 0 !important;
+.recording-div wave wave {
+    border-right: 1.5px solid #d64933 !important;
 }
 
 /* Star Rating Start */

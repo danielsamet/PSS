@@ -100,8 +100,8 @@
                                                 {%- endfor %}
                                             </td>
                                             <td>
-                                                {% for phoneme_ in example.phoneme_breakdown -%}
-                                                    {%- if phoneme_ == phoneme -%}
+                                                {% for phoneme_ in example.phoneme_breakdown.split(",") -%}
+                                                    {%- if phoneme_ == phoneme.symbol -%}
                                                         <span class="text-danger fw-bold">{{- phoneme_ -}}</span>
                                                     {%- else -%}
                                                         {{- phoneme_ -}}
@@ -116,9 +116,13 @@
 
                                 <h6 class="mt-5">Recording:</h6>
 
+                                <div class="recording-div" id="recording-div-{{ phoneme.id }}"
+                                     style="height: 128px; width: 99%;"></div>
+
                                 <div class="row justify-content-between" style="height: 60px;">
                                     <div class="col pt-3">
-                                        <button class="btn btn-primary fixed-btn record-audio">
+                                        <button class="btn btn-primary fixed-btn record-audio"
+                                                id="btn-{{ phoneme.id }}">
                                             Record
                                         </button>
 
@@ -154,7 +158,8 @@
 {% endblock main_content %}
 
 {% block extra_js %}
-    <script src="{{ url_for("static", filename="js/wavesurfer.min.js") }}"></script>
+    <script src="{{ url_for("static", filename="js/wavesurfer.js") }}"></script>
+    <script src="{{ url_for("static", filename="js/wavesurfer.regions.js") }}"></script>
     <script>
         const Toast = Swal.mixin({
             toast: true,
@@ -206,11 +211,12 @@
                 active_tab.find(".recording-results").addClass("visually-hidden");
                 active_tab.find(".save-recording").addClass("visually-hidden");
 
-                record_btn.on('mouseup', function () {
+                record_btn.one('mouseup', function () {
                     timer.stop();
                     stop_recording();
                     active_tab.find(".recording-results").removeClass("visually-hidden");
                     active_tab.find(".save-recording").removeClass("visually-hidden");
+                    load_audio("recording-div-" + this.id.replace("btn-", ""));
                 });
             });
 
@@ -228,6 +234,26 @@
                 })
             })
         });
+
+        async function load_audio(container_id) {
+            $("#" + container_id).html("");
+            let wavesurfer = WaveSurfer.create({
+                container: '#' + container_id,
+                waveColor: 'white',
+                progressColor: '#d64933',
+                hideScrollbar: true,
+                plugins: [
+                    WaveSurfer.regions.create()
+                ]
+            });
+
+            await new Promise(r => setTimeout(r, 100));
+            wavesurfer.load($(".tab-pane.active").find(".recordedAudio")[0].src);
+
+            await new Promise(r => setTimeout(r, 100));
+            let duration = wavesurfer.getDuration();
+            wavesurfer.addRegion({start: duration * 2 / 5, end: duration * 3 / 5, color: 'hsla(100, 100%, 30%, 0.1)'})
+        }
     </script>
 
     {# TODO: put the scripts below into their own files #}
@@ -292,7 +318,10 @@
             window.stream = stream; // make stream available to console
             let audioDownload = Object;
 
-            rec = new MediaRecorder(stream, {audioBitsPerSecond : 128000, mimeType: "{{ config.get("AUDIO_MIME_TYPE") }}"});
+            rec = new MediaRecorder(stream, {
+                audioBitsPerSecond: 128000,
+                mimeType: "{{ config.get("AUDIO_MIME_TYPE") }}"
+            });
             rec.ondataavailable = e => {
                 audioChunks.push(e.data);
                 if (rec.state === "inactive") {
