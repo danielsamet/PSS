@@ -15,6 +15,18 @@
     background: #182332;
 }
 
+.btn-second {
+    background: #003374;
+    border-color: #003374;
+    color: white;
+}
+
+.btn-second:hover {
+    background: rgba(0, 51, 116, 0.8);
+    border-color: rgba(0, 51, 116, 0.8);
+    color: white;
+}
+
 .bg-foreground {
     background: inherit;
 }

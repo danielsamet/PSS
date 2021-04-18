@@ -119,8 +119,8 @@
                                 <div class="recording-div" id="recording-div-{{ phoneme.id }}"
                                      style="height: 128px; width: 99%;"></div>
 
-                                <div class="row justify-content-between" style="height: 60px;">
-                                    <div class="col pt-3">
+                                <div class="row justify-content-between mt-3" style="height: 60px;">
+                                    <div class="col">
                                         <button class="btn btn-primary fixed-btn record-audio"
                                                 id="btn-{{ phoneme.id }}">
                                             Record
@@ -135,15 +135,18 @@
                                     <div class="col-auto text-end recording-results">
 
                                         {% if phoneme.recording %}
-                                            <audio class="me-3 recordedAudio" controls>
+                                            <audio class="me-3 recordedAudio d-none" controls>
                                                 <source src="{{ phoneme.recording.web_address|safe }}"
                                                         type="{{ config.get("AUDIO_MIME_TYPE") }}">
                                                 Your browser does not support the audio element.
                                             </audio>
                                         {% else %}
-                                            <audio class="me-3 recordedAudio"></audio>
+                                            <audio class="me-3 recordedAudio d-none"></audio>
                                         {% endif %}
-                                        <button class="btn btn-success mb-5 save-recording visually-hidden">
+                                        <button class="btn btn-second play-pause">
+                                            Play/Pause
+                                        </button>
+                                        <button class="btn btn-success ms-2 save-recording visually-hidden">
                                             Save
                                         </button>
                                     </div>
@@ -236,15 +239,22 @@
                 })
             });
 
-            {% for phoneme in phonemes -%}
+            {%- for phoneme in phonemes -%}
                 {%- if phoneme.recording %}
-                    load_audio("recording-div-" + {{ phoneme.id }}, "{{ phoneme.recording.web_address|safe }}", false);
+                    {% if loop.index == 1 -%}  {# load audio for first tab as well! #}
+                        load_audio("recording-div-" + {{ phoneme.id }}, "{{ phoneme.recording.web_address|safe }}", false);
+                    {% endif %}
+                    $("#phoneme-tab-{{ phoneme.number }}").on("shown.bs.tab", function () {
+                        load_audio("recording-div-" + {{ phoneme.id }}, "{{ phoneme.recording.web_address|safe }}", false);
+                    })
                 {%- endif -%}
             {%- endfor %}
         });
 
         async function load_audio(container_id, audio_url, with_cropping_region = false) {
-            $("#" + container_id).html("");
+            let container_div = $("#" + container_id);
+            console.log(container_div);
+            container_div.html("");
             let wavesurfer = WaveSurfer.create({
                 container: '#' + container_id,
                 waveColor: 'white',
@@ -266,7 +276,18 @@
                     end: duration * 3 / 5,
                     color: 'hsla(100, 100%, 30%, 0.15)'
                 });
+
+                wavesurfer.on('region-click', function (region, e) {
+                    e.stopPropagation();
+                    region.play();
+                });
             }
+
+            wavesurfer.play();
+            container_div.next().find(".play-pause").off();
+            container_div.next().find(".play-pause").on("click", function () {
+                wavesurfer.playPause();
+            });
         }
     </script>
 
@@ -344,7 +365,7 @@
 
                     recordedAudio.src = URL.createObjectURL(blob);
                     recordedAudio.controls = true;
-                    recordedAudio.autoplay = true;
+                    recordedAudio.autoplay = false;
                     audioDownload.href = recordedAudio.src;
                     audioDownload.download = '{{ config.get("AUDIO_FILE_EXT") }}';
                     audioDownload.innerHTML = 'download';
