@@ -113,6 +113,12 @@
                     wavesurfer = await load_audio("waveform", audio_url, false, btns_container, make_visible);
                 }).fail(function (response) {
                     console.log(response);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response["responseJSON"]["msg"],
+                        footer: `<p class='text-center'>Go to the <a href='{{ url_for("main.concatenation_setup") }}'>concatenation</a> page to ensure all recordings are marked with a tick!</p>`
+                    })
                 });
             });
         });

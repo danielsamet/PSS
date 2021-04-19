@@ -27,7 +27,11 @@ def synthesiser():
     if not text_input:
         return jsonify({"msg": "text cannot be empty!"}), 400
 
-    phonemes, file_addresses = tts(text_input)
+    try:
+        phonemes, file_addresses = tts(text_input)
+    except RuntimeError:
+        return jsonify({"msg": "Missing required phoneme recordings!"}), 400
+
     relative_address = file_addresses["relative_address"]
 
     return jsonify({"text_input": text_input, "file": relative_address, "phonemes": phonemes}), 200

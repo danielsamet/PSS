@@ -49,8 +49,11 @@ def parse_words(words):
         if word == " ":
             phonemes.append(" ")  # add space until the last word
         else:
-            for phoneme in current_app.phoneme_map[word]:
-                phonemes.append(phoneme)
+            try:
+                for phoneme in current_app.phoneme_map[word]:
+                    phonemes.append(phoneme)
+            except KeyError:
+                raise RuntimeError("Missing required phonemes")
 
     return phonemes
 
@@ -62,8 +65,11 @@ def generate_audio(phonemes):
 
     phoneme_recordings = {}
     for phoneme_needed in set(phonemes) - {" "}:
-        print(phoneme_needed)
-        local_address = Phoneme.query.filter_by(symbol=phoneme_needed).first().recording.local_address
+        phoneme = Phoneme.query.filter_by(symbol=phoneme_needed).first()
+        if not phoneme:
+            raise RuntimeError("Missing recordings!")
+
+        local_address = phoneme.recording.local_address
         phoneme_recordings[phoneme_needed] = os.path.join(current_app.config.get("STATIC_DIR"), local_address).replace(
             "\\", "/")
 

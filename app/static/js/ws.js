@@ -58,7 +58,6 @@ async function load_audio(container_id, audio_url, with_cropping_region = false,
         pause_btn.removeClass("btn-success").addClass("btn-secondary");
     });
 
-    console.log(btns_container);
     setup_keybinds(btns_container);
 
     make_visible.forEach(function (element) {
@@ -79,8 +78,8 @@ function setup_keybinds(btns_container) {
         }
     });
 
+    $(document).off();
     $(document).keydown(function (e) {
-        console.log(e.target.tagName.toLowerCase());
         if (e.which === 32 && e.target.tagName.toLowerCase() !== 'textarea') {
             return false;
         }
