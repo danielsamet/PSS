@@ -69,6 +69,9 @@ def generate_audio(phonemes):
         if not phoneme:
             raise RuntimeError("Missing recordings!")
 
+        if not phoneme.recording:
+            raise RuntimeError("Missing recordings!")
+
         local_address = phoneme.recording.local_address
         phoneme_recordings[phoneme_needed] = os.path.join(current_app.config.get("STATIC_DIR"), local_address).replace(
             "\\", "/")

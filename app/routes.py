@@ -69,12 +69,15 @@ def save_recording():
     except (OSError, binascii.Error):
         return jsonify({"msg": "Recording could not be saved successfully!"}), 400
 
-    # crop audio here
+    # crop audio cmd
     trim_start = request.form.get("start", 0, float)
     trim_end = request.form.get("end", 1, float)
-    subprocess.call(
-        f"ffmpeg -i \"{file_address}.temp\" -ss {trim_start:.2f} -to {trim_end:.2f} -c copy \"{file_address}\" -y"
-    )
+    trim_cmd = f"-ss {trim_start:.2f} -to {trim_end:.2f}"
+
+    # increase volume cmd for quiet phonemes [k]
+    volume_cmd = f"-filter:a 'volume=2'" if phoneme_id in [16] else ""
+
+    subprocess.call(f"ffmpeg -i \"{file_address}.temp\" {trim_cmd} -c copy \"{file_address}\" -y {volume_cmd}")
 
     if not phoneme.recording:
         phoneme.recording = PhonemeRecording(file_relative_address, file_name)
