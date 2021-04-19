@@ -27,11 +27,10 @@ def synthesiser():
     if not text_input:
         return jsonify({"msg": "text cannot be empty!"}), 400
 
-    print(text_input)
-    file_address = tts(text_input)["relative_address"]
-    print(file_address)
+    phonemes, file_addresses = tts(text_input)
+    relative_address = file_addresses["relative_address"]
 
-    return jsonify({"text_input": text_input, "file": file_address}), 200
+    return jsonify({"text_input": text_input, "file": relative_address, "phonemes": phonemes}), 200
 
 
 @bp.route('/concatenation_setup')

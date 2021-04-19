@@ -142,16 +142,23 @@
                                         {% else %}
                                             <audio class="me-3 recordedAudio d-none"></audio>
                                         {% endif %}
-                                        <button class="btn btn-second play-pause" disabled>
-                                            Play/Pause
-                                        </button>
-                                        <button class="btn btn-success ms-2 save-recording visually-hidden"
-                                                id="save-{{ phoneme.id }}">
-                                            Save
-                                        </button>
+                                        <div class="btns-container invisible">
+                                            <button class="btn btn-success fixed-btn fw-bold play-btn">
+                                                Play
+                                            </button>
+                                            <button class="btn btn-secondary fw-bold pause-btn">
+                                                Pause
+                                            </button>
+                                            <button class="btn btn-second ms-2 save-recording visually-hidden"
+                                                    id="save-{{ phoneme.id }}">
+                                                Save
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                                <p class="fst-italic text-muted float-end mb-0 invisible"><b>Hint</b>: press the spacebar to play and pause recordings.</p>
+                                <p class="fst-italic text-muted float-end mb-0 invisible">
+                                    <b>Hint</b>: press the spacebar to play and pause recordings.
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -165,6 +172,7 @@
     <script src="{{ url_for("static", filename="js/wavesurfer.js") }}"></script>
     <script src="{{ url_for("static", filename="js/wavesurfer.regions.js") }}"></script>
     <script src="{{ url_for("static", filename="js/timer.js") }}"></script>
+    <script src="{{ url_for("static", filename="js/ws.js") }}"></script>
     <script>
         const Toast = Swal.mixin({
             toast: true,
@@ -180,7 +188,7 @@
 
         wavesurfers = {};
 
-        window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', async function () {
             // Description Collapse
             let description_header = $("#description-header");
             let description_body = $("#description-body");
@@ -224,7 +232,7 @@
                     active_tab.find(".recording-results").removeClass("visually-hidden");
                     active_tab.find(".save-recording").removeClass("visually-hidden");
                     await new Promise(r => setTimeout(r, 100));
-                    await load_audio("recording-div-" + this.id.replace("btn-", ""), $(".tab-pane.active").find(".recordedAudio")[0].src, true);
+                    wavesurfers[this.id.replace("btn-", "")] = await load_audio("recording-div-" + this.id.replace("btn-", ""), active_tab.find(".recordedAudio")[0].src, true, active_tab.find(".btns-container"), [active_tab.find(".btns-container")]);
                 });
             });
 
@@ -244,74 +252,20 @@
                 })
             });
 
-            $('body').keyup(function (e) {
-                if (e.keyCode === 32) {
-                    $(".tab-pane.active").find(".play-pause").trigger("click");
-                    e.preventDefault();
-                }
-            });
-
-            $(document).keydown(function (e) {
-                if (e.which === 32) {
-                    return false;
-                }
-            });
+            let active_tab = $(".tab-pane.active");
 
             {%- for phoneme in phonemes -%}
                 {%- if phoneme.recording %}
                     {% if loop.index == 1 -%}  {# load audio for first tab as well! #}
-                        load_audio("recording-div-" + {{ phoneme.id }}, "{{ phoneme.recording.web_address|safe }}", false);
+                        wavesurfers[{{ phoneme.id }}] = await load_audio("recording-div-" + {{ phoneme.id }}, "{{ phoneme.recording.web_address|safe }}", false, active_tab.find(".btns-container"), [active_tab.find(".btns-container")]);
                     {% endif %}
-                    $("#phoneme-tab-{{ phoneme.number }}").on("shown.bs.tab", function () {
-                        load_audio("recording-div-" + {{ phoneme.id }}, "{{ phoneme.recording.web_address|safe }}", false);
+                    $("#phoneme-tab-{{ phoneme.number }}").on("shown.bs.tab", async function () {
+                        let active_tab = $(".tab-pane.active");
+                        wavesurfers[{{ phoneme.id }}] = await load_audio("recording-div-" + {{ phoneme.id }}, "{{ phoneme.recording.web_address|safe }}", false, active_tab.find(".btns-container"), [active_tab.find(".btns-container")]);
                     })
                 {%- endif -%}
             {%- endfor %}
         });
-
-        async function load_audio(container_id, audio_url, with_cropping_region = false) {
-            let container_div = $("#" + container_id);
-
-            container_div.prev().removeClass("invisible");
-            container_div.html("");
-
-            let wavesurfer = WaveSurfer.create({
-                container: '#' + container_id,
-                waveColor: 'white',
-                progressColor: '#d64933',
-                hideScrollbar: true,
-                plugins: [
-                    WaveSurfer.regions.create()
-                ]
-            });
-
-            wavesurfer.load(audio_url);
-
-            if (!!with_cropping_region) {
-                // add region (for cropped audio) at center of recorded audio
-                await new Promise(r => setTimeout(r, 100));
-                let duration = wavesurfer.getDuration();
-                wavesurfer.addRegion({
-                    start: duration * 2 / 5,
-                    end: duration * 3 / 5,
-                    color: 'hsla(100, 100%, 30%, 0.15)'
-                });
-
-                wavesurfer.on('region-click', function (region, e) {
-                    e.stopPropagation();
-                    region.play();
-                });
-            }
-
-            wavesurfer.play();
-            container_div.next().find(".play-pause").off();
-            container_div.next().find(".play-pause").on("click", function () {
-                wavesurfer.playPause();
-            }).attr("disabled", false);
-            container_div.next().next().removeClass("invisible");
-
-            wavesurfers[container_id.replace("recording-div-", "")] = wavesurfer;
-        }
     </script>
 
     {# TODO: put the script below into their own files #}

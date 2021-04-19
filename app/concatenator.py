@@ -78,7 +78,7 @@ def generate_audio(phonemes):
             filter_str += f"[{filter_counter if index == 0 else f'a{filter_counter:02}'}][{filter_counter + 1}]"
 
             apad = 4000 if phonemes[index + 1] == " " else 1000
-            filter_str += f"acrossfade=ns=2300:c1=tri:c2=tri, apad=pad_len={apad}, atempo=0.95"
+            filter_str += f"acrossfade=ns=2300:c1=tri:c2=tri, apad=pad_len={apad}, atempo=0.9"
 
             if index < len(phonemes) - 2:
                 filter_str += f"[a{filter_counter + 1:02}];"
@@ -113,7 +113,7 @@ def generate_audio(phonemes):
 def tts(input_text):
     words = parse_text(input_text)
     phonemes = parse_words(words)
-    return generate_audio(phonemes)
+    return phonemes, generate_audio(phonemes)
 
 
 if __name__ == '__main__':
