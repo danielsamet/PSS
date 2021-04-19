@@ -146,7 +146,7 @@
                                         <button class="btn btn-second play-pause">
                                             Play/Pause
                                         </button>
-                                        <button class="btn btn-success ms-2 save-recording visually-hidden">
+                                        <button class="btn btn-success ms-2 save-recording visually-hidden" id="save-{{ phoneme.id }}">
                                             Save
                                         </button>
                                     </div>
@@ -175,7 +175,9 @@
                 toast.addEventListener('mouseenter', Swal.stopTimer)
                 toast.addEventListener('mouseleave', Swal.resumeTimer)
             }
-        })
+        });
+
+        wavesurfers = {};
 
         window.addEventListener('DOMContentLoaded', () => {
             // Description Collapse
@@ -228,7 +230,9 @@
             save_record.on("click", function () {
                 let tab = $(".tab-pane.active");
 
-                uploadAudioFromBlob(tab.attr("data-phoneme-id"), window.audio_blob, "{{ url_for("main.save_recording") }}");
+                let regions = wavesurfers[this.id.replace("save-", "")].regions.list;
+                let region = regions[Object.keys(regions)[0]];
+                uploadAudioFromBlob(tab.attr("data-phoneme-id"), window.audio_blob, "{{ url_for("main.save_recording") }}", region.start, region.end);
 
                 // update tab to recorded
                 $("#phoneme-tab-" + tab.attr("data-phoneme-num")).find("i").removeClass("fa-exclamation-circle").addClass("fa-check-circle");
@@ -253,7 +257,7 @@
 
         async function load_audio(container_id, audio_url, with_cropping_region = false) {
             let container_div = $("#" + container_id);
-            console.log(container_div);
+
             container_div.html("");
             let wavesurfer = WaveSurfer.create({
                 container: '#' + container_id,
@@ -288,18 +292,22 @@
             container_div.next().find(".play-pause").on("click", function () {
                 wavesurfer.playPause();
             });
+
+            wavesurfers[container_id.replace("recording-div-", "")] = wavesurfer;
         }
     </script>
 
     {# TODO: put the script below into their own files #}
     <script>
-        function uploadAudioFromBlob(phoneme_id, blob, upload_address) {
+        function uploadAudioFromBlob(phoneme_id, blob, upload_address, start, end) {
             let reader = new FileReader();
 
             reader.onload = function (event) {
                 let formData = new FormData();
                 formData.append('phoneme_id', phoneme_id);
                 formData.append('audio', event.target.result);
+                formData.append('start', start);
+                formData.append('end', end);
                 $.ajax({
                     type: 'POST',
                     url: upload_address,

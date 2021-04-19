@@ -1,6 +1,7 @@
 import base64
 import binascii
 import os
+import subprocess
 
 from flask import current_app, redirect, url_for, render_template, Blueprint, jsonify, request
 
@@ -59,11 +60,18 @@ def save_recording():
         audio_stream = request.form.get("audio", "", str)
         audio_stream = audio_stream.replace(f"data:{current_app.config.get('AUDIO_MIME_TYPE')};base64,", "")
         audio_binary = base64.decodebytes(audio_stream.encode("utf-8"))
-        with open(file_address, "wb") as file:
+        with open(file_address + ".temp", "wb") as file:
             file.write(audio_binary)
 
     except (OSError, binascii.Error):
         return jsonify({"msg": "Recording could not be saved successfully!"}), 400
+
+    # crop audio here
+    trim_start = request.form.get("start", 0, float)
+    trim_end = request.form.get("end", 1, float)
+    subprocess.call(
+        f"ffmpeg -i \"{file_address}.temp\" -ss {trim_start:.2f} -to {trim_end:.2f} -c copy \"{file_address}\" -y"
+    )
 
     if not phoneme.recording:
         phoneme.recording = PhonemeRecording(file_relative_address, file_name)
