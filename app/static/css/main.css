@@ -150,7 +150,7 @@
 #phonemes-tab {
     overflow-y: scroll;
     flex-wrap: nowrap;
-    height: 21em;
+    height: 30em;
 }
 
 /* width */
