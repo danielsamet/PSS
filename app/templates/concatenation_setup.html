@@ -143,7 +143,7 @@
                                         {% else %}
                                             <audio class="me-3 recordedAudio d-none"></audio>
                                         {% endif %}
-                                        <button class="btn btn-second play-pause">
+                                        <button class="btn btn-second play-pause" disabled>
                                             Play/Pause
                                         </button>
                                         <button class="btn btn-success ms-2 save-recording visually-hidden" id="save-{{ phoneme.id }}">
@@ -291,7 +291,7 @@
             container_div.next().find(".play-pause").off();
             container_div.next().find(".play-pause").on("click", function () {
                 wavesurfer.playPause();
-            });
+            }).attr("disabled", false);
 
             wavesurfers[container_id.replace("recording-div-", "")] = wavesurfer;
         }
