@@ -76,19 +76,24 @@ def generate_audio(phonemes):
     inputs_str = " ".join([f"-i \"{phoneme_recordings[phoneme]}\"" for phoneme in phonemes if phoneme != " "])
 
     if len(phonemes) > 1:
-        filter_str, filter_counter = "", 0
+        filter_str, filter_counter, recording_counter = "", 1, 0
         for index in range(len(phonemes) - 1):
-            if phonemes[index] == " ":
-                continue
+            if phonemes[index + 1] == " ":
+                filter_str += f"[a{filter_counter - 1:02}]" if index > 0 else f"[{recording_counter}]"
+                filter_str += f"apad=pad_len=8000"
+                filter_str += f"[a{filter_counter:02}];"
+            else:
+                filter_str += f"[{0 if index == 0 else f'a{filter_counter - 1:02}'}]" \
+                              f"[{1 if index == 0 else recording_counter}]"
 
-            filter_str += f"[{filter_counter if index == 0 else f'a{filter_counter:02}'}][{filter_counter + 1}]"
+                apad = 8000 if phonemes[index + 1] == " " else 2000
+                filter_str += f"acrossfade=ns=2500:c1=esin:c2=esin, atempo=sqrt(0.98), apad=pad_len={apad}"
 
-            apad = 4000 if phonemes[index + 1] == " " else 1000
-            filter_str += f"acrossfade=ns=2300:c1=tri:c2=tri, apad=pad_len={apad}, atempo=0.9"
+                if index < len(phonemes) - 2:
+                    filter_str += f"[a{filter_counter:02}];"
 
-            if index < len(phonemes) - 2:
-                filter_str += f"[a{filter_counter + 1:02}];"
-
+                recording_counter += 1
+            recording_counter += 1 if index == 0 else 0
             filter_counter += 1
 
         print(filter_str)
@@ -103,10 +108,10 @@ def generate_audio(phonemes):
                       + f".{current_app.config.get('AUDIO_FILE_EXT')}"
     output_full = os.path.join(output_dir, output_filename).replace("\\", "/")
 
-    execute_str = f"ffmpeg {inputs_str} {filter_str} \"{output_full}\""
+    execute_str = f"ffmpeg {inputs_str} {filter_str} \"{output_full}\" -hide_banner -loglevel error"
 
-    print("\n")
-    print(execute_str)
+    # print("\n")
+    # print(execute_str)
 
     subprocess.call(execute_str)
 
