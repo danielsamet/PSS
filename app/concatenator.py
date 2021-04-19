@@ -63,6 +63,7 @@ def generate_audio(phonemes):
 
     phoneme_recordings = {}
     for phoneme_needed in set(phonemes):
+        print(phoneme_needed)
         local_address = Phoneme.query.filter_by(symbol=phoneme_needed).first().recording.local_address
         phoneme_recordings[phoneme_needed] = os.path.join(current_app.config.get("STATIC_DIR"), local_address).replace(
             "\\", "/")
