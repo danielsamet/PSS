@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block sub_section %}
+    <h2 class="text-center mb-0">Oh oh... You seem to have run into an error 😥</h2>
+{% endblock sub_section %}
+
+{% block main_content %}
+    <div class="text-center h-100 d-flex align-items-center">
+        <div class="row">
+            <div class="row">
+                <h1>{{ error_code }} - {{ error_name }}</h1>
+                <h6>{{ error_description }}</h6>
+            </div>
+            <div class="row justify-content-center my-5">
+                <img src="{{ url_for("static", filename="media/error.jpg") }}" alt="error_image" style="width: 50%;">
+            </div>
+            <div class="row justify-content-center">
+                <a href="{{ url_for("main.index") }}" class="col-auto btn btn-primary">Go Home</a>
+            </div>
+        </div>
+    </div>
+{% endblock main_content %}

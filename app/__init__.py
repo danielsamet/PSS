@@ -38,8 +38,11 @@ def create_app(config_class=Config, skip_dir_building=False):
     app.add_url_rule("/site_webmanifest", "site_webmanifest",
                      lambda: redirect(url_for("static", filename="favicon/site.webmanifest")))
 
-    from app.routes import bp
-    app.register_blueprint(bp)
+    from app.errors import bp as error_bp
+    app.register_blueprint(error_bp)
+
+    from app.routes import bp as main_bp
+    app.register_blueprint(main_bp)
 
     @app.shell_context_processor  # adds automatic context to the shell
     def make_shell_context():

@@ -21,7 +21,7 @@ def index():
 @bp.route('/synthesiser', methods=["GET", "POST"])
 def synthesiser():
     if request.method == "GET":
-        return render_template("synthesiser.html")
+        return render_template("main/synthesiser.html")
 
     text_input = request.form.get("text_input", "", str)
     if not text_input:
@@ -39,12 +39,12 @@ def synthesiser():
 
 @bp.route('/concatenation_setup')
 def concatenation_setup():
-    return render_template("concatenation_setup.html", phonemes=Phoneme.query.all())
+    return render_template("main/concatenation_setup.html", phonemes=Phoneme.query.all())
 
 
 @bp.route('/ml_setup')
 def ml_setup():
-    return render_template("ml_setup.html")
+    return render_template("main/ml_setup.html")
 
 
 @bp.route("/save_recording", methods=["POST"])
