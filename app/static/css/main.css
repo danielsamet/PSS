@@ -215,6 +215,7 @@ hr {
 }
 
 .form-card {
+    width: 22em;
     max-width: 30em;
 }
 

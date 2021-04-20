@@ -8,12 +8,16 @@ class Config:
 
     MIGRATIONS_DIR = "migrations_local"
 
-    SQLALCHEMY_DATABASE_URI = "sqlite:///app.db"
+    SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI") or "sqlite:///app.db"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     STATIC_DIR = os.path.join(basedir, "", "static")
 
     USER_EMAIL_SENDER_EMAIL = "danielqmuniproject@gmail.com"
+    USER_APP_NAME = "PSS"
+    USER_COPYRIGHT_YEAR = 2021
+    USER_CORPORATION_NAME = "ProjectDan"
+    USER_UNAUTHENTICATED_ENDPOINT = 'app.index'
 
     AUDIO_MIME_TYPE = "audio/webm;codecs=opus"
     AUDIO_FILE_EXT = "webm"

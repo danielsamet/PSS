@@ -1,170 +1,174 @@
 {% extends "main/base.html" %}
 
 {% block main_content %}
-    <div class="card bg-item">
-        <div class="card-header border-white" id="description-header">
-            <div class="row">
-                <h3 class="col mb-0">Description</h3>
-                <div class="col text-end">
-                    <a class="btn btn-secondary" data-bs-toggle="collapse" href="#description-body"
-                       id="toggle-description" aria-label="toggle collapse">
-                        <i class="fa fa-minus"></i>
-                    </a>
+    <div class="container">
+
+        <div class="card bg-item">
+            <div class="card-header border-white" id="description-header">
+                <div class="row">
+                    <h3 class="col mb-0">Description</h3>
+                    <div class="col text-end">
+                        <a class="btn btn-secondary" data-bs-toggle="collapse" href="#description-body"
+                           id="toggle-description" aria-label="toggle collapse">
+                            <i class="fa fa-minus"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="collapse fade show" id="description-body">
-            <div class="card-body">
-                <h4>What is it?</h4>
-                <p>Merging pre-recorded bits of audio to generate audio for words and sentences.</p>
+            <div class="collapse fade show" id="description-body">
+                <div class="card-body">
+                    <h4>What is it?</h4>
+                    <p>Merging pre-recorded bits of audio to generate audio for words and sentences.</p>
 
-                <hr class="mt-4">
+                    <hr class="mt-4">
 
-                <h4>How does it work?</h4>
-                <p>Speech concatenation works by recording every phoneme and then stitching the recordings back together
-                    to create new sequences of those phonemes.</p>
-                <div class="bg-warning text-dark rounded p-2 fa-sm">
-                    <div class="row">
-                        <div class="col-auto"><i class="fa fa-info fa-2x mt-2 ms-3 me-1"></i></div>
-                        <p class="col mb-0">Please note, this setup has been prepared exclusively with British English
-                            in mind. This is because a completely different dictionary would be needed to map words to
-                            phonemes for each dialect. Results may therefore vary for any dialect other than British
-                            English.</p>
+                    <h4>How does it work?</h4>
+                    <p>Speech concatenation works by recording every phoneme and then stitching the recordings back
+                        together to create new sequences of those phonemes.</p>
+                    <div class="bg-warning text-dark rounded p-2 fa-sm">
+                        <div class="row">
+                            <div class="col-auto"><i class="fa fa-info fa-2x mt-2 ms-3 me-1"></i></div>
+                            <p class="col mb-0">Please note, this setup has been prepared exclusively with British
+                                English in mind. This is because a different dictionary would be needed to map words
+                                to phonemes for each dialect. Results may therefore vary for any dialect other than
+                                British English.</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="row mt-4">
-        <div class="col-auto">
-            <div class="card bg-item">
-                <div class="card-body">
-                    <div class="d-flex align-items-start">
-                        <div class="nav flex-column nav-pills pe-2" id="phonemes-tab" role="tablist">
+        <div class="row mt-4">
+            <div class="col-auto">
+                <div class="card bg-item">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start">
+                            <div class="nav flex-column nav-pills pe-2" id="phonemes-tab" role="tablist">
 
-                            {% for phoneme in phonemes %}
-                                <a class="nav-link {% if phoneme.number == 1 %}active{% endif %}"
-                                   id="phoneme-tab-{{ phoneme.number }}" data-bs-toggle="pill"
-                                   href="#phoneme-{{ phoneme.number }}" role="tab"
-                                   aria-controls="phoneme-{{ phoneme.number }}"
-                                   {%- if phoneme.number == 1 %}aria-selected="true"{% endif %}>
+                                {% for phoneme in phonemes %}
+                                    <a class="nav-link {% if phoneme.number == 1 %}active{% endif %}"
+                                       id="phoneme-tab-{{ phoneme.number }}" data-bs-toggle="pill"
+                                       href="#phoneme-{{ phoneme.number }}" role="tab"
+                                       aria-controls="phoneme-{{ phoneme.number }}"
+                                       {%- if phoneme.number == 1 %}aria-selected="true"{% endif %}>
 
                                     <span class="me-2">
                                         <i class="fa {% if phoneme.recording %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} me-2"></i>
                                         Phoneme {{ phoneme.number }}:
                                     </span>
-                                    <span class="float-end">{{ phoneme.symbol }}</span>
-                                </a>
-                            {% endfor %}
+                                        <span class="float-end">{{ phoneme.symbol }}</span>
+                                    </a>
+                                {% endfor %}
 
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        {# TODO: position elsewhere and make available to end-user #}
-        <div class="visually-hidden">
-            <label for="audioSource">Audio input source: </label>
-            <select class="form-select mb-2" id="audioSource"></select>
-        </div>
+            {# TODO: position elsewhere and make available to end-user #}
+            <div class="visually-hidden">
+                <label for="audioSource">Audio input source: </label>
+                <select class="form-select mb-2" id="audioSource"></select>
+            </div>
 
-        <div class="col h-100">
-            <div class="tab-content" id="phonemes-tab-content">
-                {% for phoneme in phonemes %}
-                    <div class="tab-pane fade {% if loop.index == 1 %}show active{% endif %}"
-                         id="phoneme-{{ loop.index }}"
-                         role="tabpanel"
-                         data-phoneme-name="{{ phoneme.symbol }}"
-                         data-phoneme-num="{{ loop.index }}"
-                         data-phoneme-id="{{ phoneme.id }}"
-                         aria-labelledby="phoneme-tab-{{ loop.index }}">
-                        <div class="card bg-item h-100">
-                            <div class="card-header border-white">
-                                <h4 class="fw-bold">Phoneme {{ loop.index }}: {{ phoneme.symbol }}</h4>
-                            </div>
-                            <div class="card-body">
-                                <h6 class="mb-3">Examples for this phoneme:</h6>
+            <div class="col h-100">
+                <div class="tab-content" id="phonemes-tab-content">
+                    {% for phoneme in phonemes %}
+                        <div class="tab-pane fade {% if loop.index == 1 %}show active{% endif %}"
+                             id="phoneme-{{ loop.index }}"
+                             role="tabpanel"
+                             data-phoneme-name="{{ phoneme.symbol }}"
+                             data-phoneme-num="{{ loop.index }}"
+                             data-phoneme-id="{{ phoneme.id }}"
+                             aria-labelledby="phoneme-tab-{{ loop.index }}">
+                            <div class="card bg-item h-100">
+                                <div class="card-header border-white">
+                                    <h4 class="fw-bold">Phoneme {{ loop.index }}: {{ phoneme.symbol }}</h4>
+                                </div>
+                                <div class="card-body">
+                                    <h6 class="mb-3">Examples for this phoneme:</h6>
 
-                                <table class="table table-bordered text-white text-center mx-auto"
-                                       style="max-width: 30em;">
-                                    <tbody>
-                                    {% for example in phoneme.examples %}
-                                        <tr>
-                                            <td class="font-monospace bg-white text-dark">
-                                                {% for char in example.word -%}
-                                                    <span {% if char.isupper() %}class="text-danger fw-bold"{% endif %}>
+                                    <table class="table table-bordered text-white text-center mx-auto"
+                                           style="max-width: 30em;">
+                                        <tbody>
+                                        {% for example in phoneme.examples %}
+                                            <tr>
+                                                <td class="font-monospace bg-white text-dark">
+                                                    {% for char in example.word -%}
+                                                        <span {% if char.isupper() %}class="text-danger fw-bold"{% endif %}>
                                                         {{- char.lower().replace("(1)", "") -}}
                                                     </span>
-                                                {%- endfor %}
-                                            </td>
-                                            <td>
-                                                {% for phoneme_ in example.phoneme_breakdown.split(",") -%}
-                                                    {%- if phoneme_ == phoneme.symbol -%}
-                                                        <span class="text-danger fw-bold">{{- phoneme_ -}}</span>
-                                                    {%- else -%}
-                                                        {{- phoneme_ -}}
-                                                    {%- endif -%}
-                                                    &nbsp;
-                                                {%- endfor %}
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                    </tbody>
-                                </table>
+                                                    {%- endfor %}
+                                                </td>
+                                                <td>
+                                                    {% for phoneme_ in example.phoneme_breakdown.split(",") -%}
+                                                        {%- if phoneme_ == phoneme.symbol -%}
+                                                            <span class="text-danger fw-bold">{{- phoneme_ -}}</span>
+                                                        {%- else -%}
+                                                            {{- phoneme_ -}}
+                                                        {%- endif -%}
+                                                        &nbsp;
+                                                    {%- endfor %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
 
-                                <h6 class="mt-5 invisible recording-header">Recording:</h6>
+                                    <h6 class="mt-5 invisible recording-header">Recording:</h6>
 
-                                <div class="recording-div" id="recording-div-{{ phoneme.id }}"
-                                     style="height: 128px; width: 99%;"></div>
+                                    <div class="recording-div" id="recording-div-{{ phoneme.id }}"
+                                         style="height: 128px; width: 99%;"></div>
 
-                                <div class="row justify-content-between mt-3" style="height: 60px;">
-                                    <div class="col">
-                                        <button class="btn btn-primary fixed-btn record-audio"
-                                                id="btn-{{ phoneme.id }}">
-                                            Record
-                                        </button>
+                                    <div class="row justify-content-between mt-3" style="height: 60px;">
+                                        <div class="col">
+                                            <button class="btn btn-primary fixed-btn record-audio"
+                                                    id="btn-{{ phoneme.id }}">
+                                                Record
+                                            </button>
 
-                                        <div class="d-inline-block">
-                                            <span class="hold-msg text-muted ms-2">Hold to record</span>
-                                            <div class="stopwatch"></div>
+                                            <div class="d-inline-block">
+                                                <span class="hold-msg text-muted ms-2">Hold to record</span>
+                                                <div class="stopwatch"></div>
+                                            </div>
+
                                         </div>
-
-                                    </div>
-                                    <div class="col-auto text-end recording-results">
-                                        {% if phoneme.recording %}
-                                            <audio class="me-3 recordedAudio d-none" controls>
-                                                <source src="{{ phoneme.recording.web_address|safe }}"
-                                                        type="{{ config.get("AUDIO_MIME_TYPE") }}">
-                                                Your browser does not support the audio element.
-                                            </audio>
-                                        {% else %}
-                                            <audio class="me-3 recordedAudio d-none"></audio>
-                                        {% endif %}
-                                        <div class="btns-container invisible">
-                                            <button class="btn btn-success fixed-btn fw-bold play-btn">
-                                                Play
-                                            </button>
-                                            <button class="btn btn-secondary fw-bold pause-btn">
-                                                Pause
-                                            </button>
-                                            <button class="btn btn-second ms-2 save-recording visually-hidden"
-                                                    id="save-{{ phoneme.id }}">
-                                                Save
-                                            </button>
+                                        <div class="col-auto text-end recording-results">
+                                            {% if phoneme.recording %}
+                                                <audio class="me-3 recordedAudio d-none" controls>
+                                                    <source src="{{ phoneme.recording.web_address|safe }}"
+                                                            type="{{ config.get("AUDIO_MIME_TYPE") }}">
+                                                    Your browser does not support the audio element.
+                                                </audio>
+                                            {% else %}
+                                                <audio class="me-3 recordedAudio d-none"></audio>
+                                            {% endif %}
+                                            <div class="btns-container invisible">
+                                                <button class="btn btn-success fixed-btn fw-bold play-btn">
+                                                    Play
+                                                </button>
+                                                <button class="btn btn-secondary fw-bold pause-btn">
+                                                    Pause
+                                                </button>
+                                                <button class="btn btn-second ms-2 save-recording visually-hidden"
+                                                        id="save-{{ phoneme.id }}">
+                                                    Save
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
+                                    <p class="fst-italic text-muted float-end mb-0 invisible">
+                                        <b>Hint</b>: press the spacebar to play and pause recordings.
+                                    </p>
                                 </div>
-                                <p class="fst-italic text-muted float-end mb-0 invisible">
-                                    <b>Hint</b>: press the spacebar to play and pause recordings.
-                                </p>
                             </div>
                         </div>
-                    </div>
-                {% endfor %}
+                    {% endfor %}
+                </div>
             </div>
         </div>
+
     </div>
 {% endblock main_content %}
 

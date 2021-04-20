@@ -1,92 +1,96 @@
 {% extends "main/base.html" %}
 
 {% block main_content %}
-    <div class="alert alert-warning">
-        <b>Note</b>: this project is still in progress and may not work as expected until v1.0 is released.
-    </div>
+    <div class="container">
 
-    <div class="card bg-item">
-        <div class="card-body p-4">
-            <label class="h4 form-label fw-bold" for="synthesiser_text">Text To Synthesise:</label>
-            <textarea class="form-control bg-light" id="synthesiser_text" rows="8"
-                      placeholder="Enter text here for speech synthesis"></textarea>
+        <div class="alert alert-warning">
+            <b>Note</b>: this project is still in progress and may not work as expected until v1.0 is released.
         </div>
-    </div>
 
-    <div class="card bg-item my-4">
-        <div class="card-body p-4">
-            <div class="row justify-content-between">
-                <div class="col-auto">
-                    <button class="btn btn-primary fixed-btn fw-bold" id="synthesise_btn">Synthesise</button>
-                </div>
-                <div class="col-auto text-end invisible" id="btns-container">
-                    <button class="btn btn-success fixed-btn fw-bold play-btn" id="play_btn">Play</button>
-                    <button class="btn btn-secondary fw-bold pause-btn" id="pause_btn">Pause</button>
-                </div>
+        <div class="card bg-item">
+            <div class="card-body p-4">
+                <label class="h4 form-label fw-bold" for="synthesiser_text">Text To Synthesise:</label>
+                <textarea class="form-control bg-light" id="synthesiser_text" rows="8"
+                          placeholder="Enter text here for speech synthesis"></textarea>
             </div>
         </div>
-    </div>
 
-    <div class="row invisible" id="result-container">
-        <div class="col-8 flex-grow-1">
-            <div class="card bg-item">
-                <div class="card-body p-4 text-center">
-                    <div id="waveform"></div>
-                </div>
-            </div>
-        </div>
-        <div class="col-4 flex-grow-1">
-            <div class="card bg-item h-100">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="rating-col">
-                            <label class="col-form-label fw-bold metric-label">Metric 1</label>
-                        </div>
-                        <div class="col">
-                            <div class="rate mx-auto">
-                                {% for index in range(5, 0, -1) %}
-                                    <input type="radio" id="star{{ index }}" name="rate_metric_1" value="{{ index }}"
-                                           {% if index == 4 %}checked{% endif %}/>
-                                    <label for="star{{ index }}" title="text">{{ index }} stars</label>
-                                {% endfor %}
-                            </div>
-                        </div>
+        <div class="card bg-item my-4">
+            <div class="card-body p-4">
+                <div class="row justify-content-between">
+                    <div class="col-auto">
+                        <button class="btn btn-primary fixed-btn fw-bold" id="synthesise_btn">Synthesise</button>
                     </div>
-
-                    <div class="row">
-                        <div class="rating-col">
-                            <label class="col-form-label fw-bold metric-label">Metric 2</label>
-                        </div>
-                        <div class="col">
-                            <div class="rate mx-auto">
-                                {% for index in range(10, 5, -1) %}
-                                    <input type="radio" id="star{{ index }}" name="rate_metric_2"
-                                           value="{{ index }}" {% if index == 7 %}checked{% endif %}/>
-                                    <label for="star{{ index }}" title="text">{{ index }} stars</label>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="rating-col">
-                            <label class="col-form-label fw-bold metric-label">Metric 3</label>
-                        </div>
-                        <div class="col">
-                            <div class="rate mx-auto">
-                                {% for index in range(15, 10, -1) %}
-                                    <input type="radio" id="star{{ index }}" name="rate_metric_3"
-                                           value="{{ index }}" {% if index == 13 %}checked{% endif %}/>
-                                    <label for="star{{ index }}" title="text">{{ index }} stars</label>
-                                {% endfor %}
-                            </div>
-                        </div>
+                    <div class="col-auto text-end invisible" id="btns-container">
+                        <button class="btn btn-success fixed-btn fw-bold play-btn" id="play_btn">Play</button>
+                        <button class="btn btn-secondary fw-bold pause-btn" id="pause_btn">Pause</button>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
+        <div class="row invisible" id="result-container">
+            <div class="col-8 flex-grow-1">
+                <div class="card bg-item">
+                    <div class="card-body p-4 text-center">
+                        <div id="waveform"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4 flex-grow-1">
+                <div class="card bg-item h-100">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="rating-col">
+                                <label class="col-form-label fw-bold metric-label">Metric 1</label>
+                            </div>
+                            <div class="col">
+                                <div class="rate mx-auto">
+                                    {% for index in range(5, 0, -1) %}
+                                        <input type="radio" id="star{{ index }}" name="rate_metric_1"
+                                               value="{{ index }}"
+                                               {% if index == 4 %}checked{% endif %}/>
+                                        <label for="star{{ index }}" title="text">{{ index }} stars</label>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="rating-col">
+                                <label class="col-form-label fw-bold metric-label">Metric 2</label>
+                            </div>
+                            <div class="col">
+                                <div class="rate mx-auto">
+                                    {% for index in range(10, 5, -1) %}
+                                        <input type="radio" id="star{{ index }}" name="rate_metric_2"
+                                               value="{{ index }}" {% if index == 7 %}checked{% endif %}/>
+                                        <label for="star{{ index }}" title="text">{{ index }} stars</label>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="rating-col">
+                                <label class="col-form-label fw-bold metric-label">Metric 3</label>
+                            </div>
+                            <div class="col">
+                                <div class="rate mx-auto">
+                                    {% for index in range(15, 10, -1) %}
+                                        <input type="radio" id="star{{ index }}" name="rate_metric_3"
+                                               value="{{ index }}" {% if index == 13 %}checked{% endif %}/>
+                                        <label for="star{{ index }}" title="text">{{ index }} stars</label>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
 {% endblock main_content %}
 
 {% block extra_js %}
@@ -118,7 +122,7 @@
                         title: 'Error',
                         text: response["responseJSON"]["msg"],
                         footer: `<p class='text-center'>Go to the <a href='{{ url_for("main.concatenation_setup") }}'>concatenation</a> page to ensure all recordings are marked with a tick!</p>`
-                    })
+                    });
                 });
             });
         });

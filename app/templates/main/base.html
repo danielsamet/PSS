@@ -1,5 +1,21 @@
 {% extends "base.html" %}
 
+{% block navbar %}
+    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == "main.synthesiser" %}active{% endif %}" aria-current="page"
+               href="{{ url_for("main.synthesiser") }}">Synthesiser</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == "main.concatenation_setup" %}active{% endif %}"
+               href="{{ url_for("main.concatenation_setup") }}">Setup</a>
+        </li>
+    </ul>
+    <div>
+        <a class="btn btn-warning fw-bold" href="{{ url_for("auth.logout") }}">Logout</a>
+    </div>
+{% endblock navbar %}
+
 {% block sub_section %}
     <label class="fw-bold me-3">Voices:</label>
 

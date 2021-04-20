@@ -1,13 +1,15 @@
 {% extends "base.html" %}
 
 {% block sub_section %}
-    <h5 class="mb-0 text-center">This is my final year project @ Queen Mary University of London. See my other projects
-        <a href="#" class="link-success">here</a></h5>
+    <h5 class="mb-0 text-center">
+        This webapp is my final year project @ Queen Mary University of London. See my other projects
+        <a href="#" class="link-success">here</a>.
+    </h5>
 {% endblock sub_section %}
 
 {% block main_content %}
     <div class="container" style="max-width: 130em;">
-        <div class="text-center mt-3 mx-auto" style="max-width: 60em;">
+        <div class="text-center mt-3 mx-auto" style="max-width: 80em;">
             <h1>Personal Speech Synthesis</h1>
             <h5 class="text-muted">
                 A webapp built to ease the creation of personal speech synthesisers. This app will guide you through
@@ -16,8 +18,8 @@
             </h5>
         </div>
 
-        <div class="row d-flex justify-content-center align-items-center h-100">
-            <div class="col-auto">
+        <div class="row justify-content-center mt-5">
+            <div class="col-auto mt-5">
                 <div class="card bg-second text-white">
                     <div class="card-header border-white">
                         <h4 class="mb-0">How it Works</h4>
@@ -68,36 +70,110 @@
                 </div>
             </div>
 
-            <div class="col-auto">
-                <div class="card form-card h-100 mx-auto">
-                    <div class="card-header bg-second text-white">
-                        <h4 class="mb-0">Start Now</h4>
-                    </div>
-                    <form>
-                        <div class="card-body bg-light py-5">
+            <div class="col-auto mt-5">
+                <form class="h-100">
+                    <div class="card form-card h-100 mx-auto">
+                        <div class="card-header bg-second text-white">
+                            <h4 class="mb-0">Start Now</h4>
+                        </div>
+                        <div class="card-body h-100 bg-light">
+                            {{ form.hidden_tag() }}
+
                             <div class="mb-3">
-                                <label for="exampleInputEmail1" class="form-label">Email address</label>
-                                <input type="email" class="form-control" id="exampleInputEmail1"
-                                       aria-describedby="emailHelp">
-                                <div id="emailHelp" class="form-text">We'll never share your email with anyone else.
-                                </div>
+                                <label for="email_address" class="form-label fw-bold">Email address</label>
+                                {{ form.email_address(class_="form-control", type="email", id="email_address") }}
+                                <label class="invalid-feedback">Invalid email address format</label>
                             </div>
+
                             <div class="mb-3">
-                                <label for="exampleInputPassword1" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="exampleInputPassword1">
+                                <label for="password" class="form-label fw-bold">Password</label>
+                                {{ form.password(class_="form-control", type="password", id="password") }}
                             </div>
-                            <div class="mb-3 form-check">
-                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                                <label class="form-check-label" for="exampleCheck1">Remember Me?</label>
+
+                            <div class="mb-2 form-check">
+                                <input type="checkbox" class="form-check-input" id="remember_me">
+                                <label class="form-check-label" for="remember_me">Remember Me?</label>
                             </div>
+
+                            <div class="mb-3">
+                                <a class="link-dark" href="#">Forgot password?</a>
+                            </div>
+
+                            {#                            <div class="text-muted" style="max-width: 18em;">#}
+                            {#                                PSS is open-source and free to use under the GNU GPLv3 license#}
+                            {#                            </div>#}
+
+                            <div class="alert alert-danger mb-0 visually-hidden" id="error_msg"></div>
                         </div>
                         <div class="card-footer bg-second text-white text-end">
-                            <button type="submit" class="btn btn-success me-2">Register</button>
-                            <button type="submit" class="btn btn-primary">Login</button>
+                            <button type="button" class="btn btn-success btn-sm fw-bold me-2"
+                                    onclick="form_submission('register');">Register
+                            </button>
+                            <button type="button" class="btn btn-primary btn-sm fw-bold"
+                                    onclick="form_submission('login');">Login
+                            </button>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 {% endblock main_content %}
+
+{% block extra_js %}
+    <script>
+        let email_address = $("#email_address");
+        let password = $("#password");
+        let csrf_token = $("#csrf_token");
+        let remember_me = $("#remember_me");
+        let error_msg = $("#error_msg");
+
+        function validateEmail($email) {
+            return /^([\w-\.]+@([\w-]+\.)+[\w-]{2,10})?$/.test($email) && $email !== "";
+        }
+
+        function form_submission(type) {
+            let valid = true;
+            error_msg.addClass("visually-hidden");
+
+            if (!validateEmail(email_address.val())) {
+                email_address.addClass("is-invalid");
+                valid = false;
+            } else
+                email_address.removeClass("is-invalid");
+
+            if (password.val() === "") {
+                password.addClass("is-invalid");
+                valid = false;
+            } else
+                password.removeClass("is-invalid");
+
+            if (!valid)
+                return;
+
+            let url;
+            if (type === "login")
+                url = "{{ url_for("auth.login") }}";
+            else
+                url = "{{ url_for("auth.register") }}";
+
+            $.post(url, {
+                "email_address": email_address.val(),
+                "password": password.val(),
+                "csrf_token": csrf_token.val(),
+                "remember_me": remember_me.is(":checked")
+            }).done(function (response) {
+                window.location.href = "{{ url_for("main.synthesiser") }}";
+            }).fail(function (response) {
+                let msg = "An error occurred :(";
+
+                if (Object.keys(response).includes("responseJSON"))
+                    if (Object.keys(response.responseJSON).includes("msg"))
+                        msg = response.responseJSON["msg"];
+
+                error_msg.removeClass("visually-hidden");
+                error_msg.text(msg);
+            });
+        }
+    </script>
+{% endblock %}

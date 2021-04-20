@@ -4,6 +4,7 @@ import os
 import subprocess
 
 from flask import current_app, render_template, Blueprint, jsonify, request
+from flask_user import login_required
 
 from app import db
 from app.main.concatenator import tts
@@ -13,6 +14,7 @@ bp = Blueprint('main', __name__, url_prefix="/")
 
 
 @bp.route('/synthesiser', methods=["GET", "POST"])
+@login_required
 def synthesiser():
     if request.method == "GET":
         return render_template("main/synthesiser.html")
@@ -32,16 +34,13 @@ def synthesiser():
 
 
 @bp.route('/concatenation_setup')
+@login_required
 def concatenation_setup():
     return render_template("main/concatenation_setup.html", phonemes=Phoneme.query.all())
 
 
-@bp.route('/ml_setup')
-def ml_setup():
-    return render_template("main/ml_setup.html")
-
-
 @bp.route("/save_recording", methods=["POST"])
+@login_required
 def save_recording():
     phoneme_id = request.form.get("phoneme_id", 0, int)
     phoneme = Phoneme.query.filter_by(id=phoneme_id).first()
