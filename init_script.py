@@ -1,6 +1,6 @@
 from app import create_app, db
-from app.models import Phoneme, PhonemeExample
-from app.phoneme_example_dict import phoneme_words
+from app.main.models import Phoneme, PhonemeExample
+from app.main.phonemes.phoneme_example_dict import phoneme_words
 
 application = create_app(skip_dir_building=True)
 with application.app_context():

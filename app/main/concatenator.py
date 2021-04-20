@@ -15,7 +15,7 @@ import subprocess
 from flask import current_app
 
 from app import create_app
-from app.models import Phoneme
+from app.main.models import Phoneme
 
 
 def parse_text(text):

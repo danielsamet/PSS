@@ -29,7 +29,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-second flex-grow-0 p-4">
     <div class="container px-4">
-        <a class="navbar-brand fw-bold" href="{{ url_for("main.index") }}">
+        <a class="navbar-brand fw-bold" href="{{ url_for("app.index") }}">
             <img src="{{ url_for("static", filename="media/logo.png") }}" alt="PSS" class="nav-logo" width="18em" height="100%">
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -62,7 +62,7 @@
     </div>
 </section>
 
-<main class="container bg-foreground flex-grow-1 d-flex p-0">
+<main class="container-fluid bg-foreground flex-grow-1 d-flex p-0">
     <div class="p-4 flex-grow-1 d-flex flex-column">
         {% block main_content %}{% endblock main_content %}
     </div>

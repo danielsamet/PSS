@@ -213,3 +213,25 @@ hr {
     font-size: x-large;
     font-weight: bold;
 }
+
+.form-card {
+    max-width: 30em;
+}
+
+.hiw-info {
+    border: white solid .25rem;
+    border-radius: 15px;
+    padding: 3em;
+    height: 16em;
+}
+
+.hiw-info-marker {
+    position: absolute;
+    top: 1em;
+    right: 1em;
+}
+
+.hiw-text {
+    max-width: 10em;
+    margin-bottom: 0;
+}

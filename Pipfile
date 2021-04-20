@@ -7,6 +7,12 @@ name = "pypi"
 flask = "*"
 flask-migrate = "*"
 ffmpeg-python = "*"
+flask-wtf = "*"
+importlib-metadata = "*"
+flask-user = "*"
+werkzeug = "*"
+itsdangerous = "*"
+email-validator = "*"
 
 [dev-packages]
 

@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block sub_section %}
+    <h5 class="mb-0 text-center">This is my final year project @ Queen Mary University of London. See my other projects
+        <a href="#" class="link-success">here</a></h5>
+{% endblock sub_section %}
+
+{% block main_content %}
+    <div class="container" style="max-width: 130em;">
+        <div class="text-center mt-3 mx-auto" style="max-width: 60em;">
+            <h1>Personal Speech Synthesis</h1>
+            <h5 class="text-muted">
+                A webapp built to ease the creation of personal speech synthesisers. This app will guide you through
+                recording the relevant parts of your voice. This will then allow you to type new - unseen - text and
+                synthesise real speech audio.
+            </h5>
+        </div>
+
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-auto">
+                <div class="card bg-second text-white">
+                    <div class="card-header border-white">
+                        <h4 class="mb-0">How it Works</h4>
+                    </div>
+                    <div class="card-body px-5">
+                        <div class="row justify-content-center my-5">
+                            <div class="col-auto text-center position-relative me-4">
+                                <div class="row hiw-info">
+                                    <div class="col-auto">
+                                        <i class="fa fa-microphone-alt fa-5x"></i>
+                                        <br>
+                                        <br>
+                                        <p class="fw-bold hiw-text">You'll be guided through recording your voice</p>
+                                    </div>
+
+                                    <div class="col-auto d-flex align-items-center h-100">
+                                        <i class="fa fa-arrow-right fa-3x mx-4 text-white-50"></i>
+                                    </div>
+                                </div>
+                                <span class="hiw-info-marker fs-6">once</span>
+                            </div>
+
+                            <div class="col-auto text-center position-relative">
+                                <div class="row hiw-info">
+                                    <div class="col-auto">
+                                        <i class="fa fa-keyboard fa-5x"></i>
+                                        <br>
+                                        <br>
+                                        <p class="fw-bold hiw-text">Type your desired text</p>
+                                    </div>
+
+                                    <div class="col-auto d-flex align-items-center h-100">
+                                        <i class="fa fa-arrow-right fa-3x mx-4 text-white-50"></i>
+                                    </div>
+
+                                    <div class="col-auto">
+                                        <i class="fa fa-volume-up fa-5x"></i>
+                                        <br>
+                                        <br>
+                                        <p class="fw-bold hiw-text">Hear your speech synthesised</p>
+                                    </div>
+                                </div>
+
+                                <span class="hiw-info-marker fs-6">repeat</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-auto">
+                <div class="card form-card h-100 mx-auto">
+                    <div class="card-header bg-second text-white">
+                        <h4 class="mb-0">Start Now</h4>
+                    </div>
+                    <form>
+                        <div class="card-body bg-light py-5">
+                            <div class="mb-3">
+                                <label for="exampleInputEmail1" class="form-label">Email address</label>
+                                <input type="email" class="form-control" id="exampleInputEmail1"
+                                       aria-describedby="emailHelp">
+                                <div id="emailHelp" class="form-text">We'll never share your email with anyone else.
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="exampleInputPassword1" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="exampleInputPassword1">
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                <label class="form-check-label" for="exampleCheck1">Remember Me?</label>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-second text-white text-end">
+                            <button type="submit" class="btn btn-success me-2">Register</button>
+                            <button type="submit" class="btn btn-primary">Login</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock main_content %}
