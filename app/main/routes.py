@@ -79,9 +79,19 @@ def save_recording():
     # increase volume cmd for quiet phonemes [k]
     volume_cmd = f"-filter:a 'volume=2'" if phoneme_id in [16] else ""
 
-    subprocess.call(f"ffmpeg -i \"{file_address}.temp\" {trim_cmd} -c copy \"{file_address}\" -y {volume_cmd}")
+    subprocess.call(f"ffmpeg -i \"{file_address}.temp\" {trim_cmd} -c copy \"{file_address}\" -y {volume_cmd} "
+                    f"-hide_banner -loglevel error")
 
     os.remove(file_address + ".temp")
+
+    # delete old recording if exists
+    if phoneme_id in current_user.phoneme_recordings:
+        try:
+            os.remove(os.path.join(current_app.config["USER_DIR"],
+                                   current_user.phoneme_recordings[phoneme_id].local_address))
+        except FileNotFoundError:
+            pass
+        db.session.delete(current_user.phoneme_recordings[phoneme_id])
 
     current_user.phoneme_recording_objects.append(PhonemeRecording(file_relative_address, file_name, phoneme_id))
 

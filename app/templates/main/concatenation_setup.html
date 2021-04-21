@@ -158,7 +158,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <p class="fst-italic text-muted float-end mb-0 invisible">
+                                    <p class="fst-italic text-muted float-end mb-0 invisible hint-msg">
                                         <b>Hint</b>: press the spacebar to play and pause recordings.
                                     </p>
                                 </div>
@@ -236,7 +236,7 @@
                     active_tab.find(".recording-results").removeClass("visually-hidden");
                     active_tab.find(".save-recording").removeClass("visually-hidden");
                     await new Promise(r => setTimeout(r, 100));
-                    wavesurfers[this.id.replace("btn-", "")] = await load_audio("recording-div-" + this.id.replace("btn-", ""), active_tab.find(".recordedAudio")[0].src, true, active_tab.find(".btns-container"), [active_tab.find(".btns-container")]);
+                    wavesurfers[this.id.replace("btn-", "")] = await load_audio("recording-div-" + this.id.replace("btn-", ""), active_tab.find(".recordedAudio")[0].src, true, active_tab.find(".btns-container"), [active_tab.find(".btns-container"), active_tab.find(".hint-msg")]);
                 });
             });
 
@@ -261,11 +261,11 @@
             {%- for phoneme in phonemes -%}
                 {%- if current_user.phoneme_recordings[phoneme.id] %}
                     {% if loop.index == 1 -%}  {# load audio for first tab as well! #}
-                        wavesurfers[{{ phoneme.id }}] = await load_audio("recording-div-" + {{ phoneme.id }}, "{{ current_user.phoneme_recordings[phoneme.id].web_address|safe }}", false, active_tab.find(".btns-container"), [active_tab.find(".btns-container")]);
+                        wavesurfers[{{ phoneme.id }}] = await load_audio("recording-div-" + {{ phoneme.id }}, "{{ current_user.phoneme_recordings[phoneme.id].web_address|safe }}", false, active_tab.find(".btns-container"), [active_tab.find(".btns-container"), active_tab.find(".hint-msg")]);
                     {% endif %}
                     $("#phoneme-tab-{{ phoneme.number }}").on("shown.bs.tab", async function () {
                         let active_tab = $(".tab-pane.active");
-                        wavesurfers[{{ phoneme.id }}] = await load_audio("recording-div-" + {{ phoneme.id }}, "{{ current_user.phoneme_recordings[phoneme.id].web_address|safe }}", false, active_tab.find(".btns-container"), [active_tab.find(".btns-container")]);
+                        wavesurfers[{{ phoneme.id }}] = await load_audio("recording-div-" + {{ phoneme.id }}, "{{ current_user.phoneme_recordings[phoneme.id].web_address|safe }}", false, active_tab.find(".btns-container"), [active_tab.find(".btns-container"), active_tab.find(".hint-msg")]);
                     })
                 {%- endif -%}
             {%- endfor %}
