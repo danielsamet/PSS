@@ -13,6 +13,7 @@ import string
 import subprocess
 
 from flask import current_app
+from flask_login import current_user
 
 from app import create_app
 from app.main.models import Phoneme
@@ -63,16 +64,17 @@ def generate_audio(phonemes):
     returns file address for generated audio
     """
 
+    # get users' phoneme recordings
     phoneme_recordings = {}
     for phoneme_needed in set(phonemes) - {" "}:
         phoneme = Phoneme.query.filter_by(symbol=phoneme_needed).first()
         if not phoneme:
+            raise RuntimeError("Error!")
+
+        if phoneme.id not in current_user.phoneme_recordings:
             raise RuntimeError("Missing recordings!")
 
-        if not phoneme.recording:
-            raise RuntimeError("Missing recordings!")
-
-        local_address = phoneme.recording.local_address
+        local_address = current_user.phoneme_recordings[phoneme.id].local_address
         phoneme_recordings[phoneme_needed] = os.path.join(current_app.config.get("STATIC_DIR"), local_address).replace(
             "\\", "/")
 
