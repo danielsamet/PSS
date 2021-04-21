@@ -1,11 +1,16 @@
+import hashlib
+import os
 from datetime import datetime
 
 from flask import current_app
 from flask_user import UserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadSignature, BadHeader
+from sqlalchemy.ext.associationproxy import association_proxy
+from sqlalchemy.orm.collections import attribute_mapped_collection, column_mapped_collection
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db, login
+from app.main.models import PhonemeRecording
 
 
 class User(db.Model, UserMixin):
@@ -22,6 +27,20 @@ class User(db.Model, UserMixin):
     last_seen = db.Column(db.DateTime())
 
     roles = db.relationship('Role', secondary='user_roles', back_populates="users")
+
+    phoneme_recording_objects = db.relationship("PhonemeRecording", back_populates="user")
+    phoneme_recordings = db.relationship(
+        "PhonemeRecording", collection_class=column_mapped_collection(PhonemeRecording.__table__.c.phoneme_id),
+        viewonly=True
+    )
+
+    # phoneme_recordings_local = association_proxy(
+    #     "phoneme_recording_objects", "local_address",
+    #     creator=lambda rel_dir, name, phoneme_id: PhonemeRecording(rel_dir, name, phoneme_id)
+    # )
+
+    # phoneme_recordings_web = association_proxy("phoneme_recording_objects", "text",
+    #                                            creator=lambda step, text: PhonemeRecording(text, step))
 
     def __init__(self, email_address, password):
         self.email_address = email_address
@@ -72,6 +91,26 @@ class User(db.Model, UserMixin):
     @property
     def email_confirmed_at(self):  # fake property for Flask-User
         return True
+
+    @property
+    def user_parent_dir(self):
+        # Allows for large number of users by separating all user folders into 16 different parent folders
+        return hashlib.md5(str(self.email_address).encode('utf-8')).hexdigest().lower()[0]
+
+    @property
+    def user_secure_dir(self):
+        # Allows for large number of users by separating all user folders into 16 different parent folders
+        return os.path.join(self.user_parent_dir, str(self.id))
+
+    @property
+    def relative_recording_dir(self):
+        return os.path.join(self.user_secure_dir, "recordings")
+
+    def ensure_dir_is_built(self):
+        for directory in [current_app.config["USER_DIR"], self.user_parent_dir, self.user_secure_dir,
+                          self.relative_recording_dir]:
+            if not os.path.isdir(directory):
+                os.mkdir(directory)
 
     def __repr__(self):
         return f'<User {self.email_address}>'

@@ -53,7 +53,7 @@
                                        {%- if phoneme.number == 1 %}aria-selected="true"{% endif %}>
 
                                     <span class="me-2">
-                                        <i class="fa {% if phoneme.recording %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} me-2"></i>
+                                        <i class="fa {% if current_user.phoneme_recordings[phoneme.id] %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} me-2"></i>
                                         Phoneme {{ phoneme.number }}:
                                     </span>
                                         <span class="float-end">{{ phoneme.symbol }}</span>
@@ -135,9 +135,9 @@
 
                                         </div>
                                         <div class="col-auto text-end recording-results">
-                                            {% if phoneme.recording %}
+                                            {% if current_user.phoneme_recordings[phoneme.id] %}
                                                 <audio class="me-3 recordedAudio d-none" controls>
-                                                    <source src="{{ phoneme.recording.web_address|safe }}"
+                                                    <source src="{{ current_user.phoneme_recordings[phoneme.id].web_address|safe }}"
                                                             type="{{ config.get("AUDIO_MIME_TYPE") }}">
                                                     Your browser does not support the audio element.
                                                 </audio>
@@ -259,13 +259,13 @@
             let active_tab = $(".tab-pane.active");
 
             {%- for phoneme in phonemes -%}
-                {%- if phoneme.recording %}
+                {%- if current_user.phoneme_recordings[phoneme.id] %}
                     {% if loop.index == 1 -%}  {# load audio for first tab as well! #}
-                        wavesurfers[{{ phoneme.id }}] = await load_audio("recording-div-" + {{ phoneme.id }}, "{{ phoneme.recording.web_address|safe }}", false, active_tab.find(".btns-container"), [active_tab.find(".btns-container")]);
+                        wavesurfers[{{ phoneme.id }}] = await load_audio("recording-div-" + {{ phoneme.id }}, "{{ current_user.phoneme_recordings[phoneme.id].web_address|safe }}", false, active_tab.find(".btns-container"), [active_tab.find(".btns-container")]);
                     {% endif %}
                     $("#phoneme-tab-{{ phoneme.number }}").on("shown.bs.tab", async function () {
                         let active_tab = $(".tab-pane.active");
-                        wavesurfers[{{ phoneme.id }}] = await load_audio("recording-div-" + {{ phoneme.id }}, "{{ phoneme.recording.web_address|safe }}", false, active_tab.find(".btns-container"), [active_tab.find(".btns-container")]);
+                        wavesurfers[{{ phoneme.id }}] = await load_audio("recording-div-" + {{ phoneme.id }}, "{{ current_user.phoneme_recordings[phoneme.id].web_address|safe }}", false, active_tab.find(".btns-container"), [active_tab.find(".btns-container")]);
                     })
                 {%- endif -%}
             {%- endfor %}

@@ -13,8 +13,7 @@ class Phoneme(db.Model):
     symbol = db.Column(db.String(3), nullable=False)
     number = db.Column(db.Integer)
 
-    recording_id = db.Column(db.Integer, db.ForeignKey("phoneme_recordings.id"))
-    recording = db.relationship("PhonemeRecording", back_populates="phoneme")
+    recordings = db.relationship("PhonemeRecording", back_populates="phoneme")
 
     examples = db.relationship("PhonemeExample", back_populates="phoneme")
 
@@ -23,7 +22,7 @@ class Phoneme(db.Model):
         self.number = number
 
     def __repr__(self):
-        return f"<PhonemeRecording {self.number}:{self.symbol}>"
+        return f"<Phoneme {self.number}:{self.symbol}>"
 
 
 class PhonemeExample(db.Model):
@@ -51,16 +50,22 @@ class PhonemeRecording(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     relative_dir = db.Column(db.String(2048))
-    name = db.Column(db.String(32))
+    name = db.Column(db.String(32))  # filename
 
-    phoneme = db.relationship("Phoneme", back_populates="recording", uselist=False)
+    phoneme_id = db.Column(db.Integer, db.ForeignKey("phonemes.id"))
+    phoneme = db.relationship("Phoneme", back_populates="recordings")
 
-    def __init__(self, relative_dir, name):
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    user = db.relationship("User", back_populates="phoneme_recording_objects")
+
+    def __init__(self, relative_dir, name, phoneme_id=None):
         self.relative_dir = relative_dir
         self.name = name
 
+        self.phoneme_id = phoneme_id
+
     def __repr__(self):
-        return f"<PhonemeRecording {self.phoneme}:{self.id}>"
+        return f"<PhonemeRecording {self.user}:{self.phoneme}>"
 
     @property
     def local_address(self):
@@ -69,4 +74,4 @@ class PhonemeRecording(db.Model):
 
     @property
     def web_address(self):
-        return url_for("static", filename=os.path.join(self.relative_dir, self.name).replace("\\", "/"))
+        return url_for("main.user_data", filename=os.path.join(self.relative_dir, self.name).replace("\\", "/"))

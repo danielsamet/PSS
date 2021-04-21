@@ -1,9 +1,12 @@
 import base64
 import binascii
+import datetime
+import hashlib
 import os
 import subprocess
 
-from flask import current_app, render_template, Blueprint, jsonify, request
+from flask import current_app, render_template, Blueprint, jsonify, request, send_from_directory
+from flask_login import current_user
 from flask_user import login_required
 
 from app import db
@@ -42,20 +45,26 @@ def concatenation_setup():
 @bp.route("/save_recording", methods=["POST"])
 @login_required
 def save_recording():
+    """saves the provided phoneme recording audio stream into the users' personal directory under a random name"""
+
     phoneme_id = request.form.get("phoneme_id", 0, int)
     phoneme = Phoneme.query.filter_by(id=phoneme_id).first()
 
     if not phoneme:
         return jsonify({"msg": "Unknown phoneme id supplied!"}), 400
 
-    file_name = f"{phoneme.number}.{current_app.config.get('AUDIO_FILE_EXT')}"
-    file_relative_address = "recording"
-    file_address = os.path.join(current_app.config.get("STATIC_DIR"), file_relative_address, file_name)
+    # random name is to prevent caching issues when re-recording a phoneme
+    random_name = hashlib.md5(str(datetime.datetime.utcnow()).encode('utf-8')).hexdigest().lower()
+    file_name = f"{random_name}.{current_app.config.get('AUDIO_FILE_EXT')}"
+    file_relative_address = current_user.relative_recording_dir
+    file_address = os.path.join(current_app.config.get("USER_DIR"), file_relative_address, file_name)
 
     try:
         audio_stream = request.form.get("audio", "", str)
         audio_stream = audio_stream.replace(f"data:{current_app.config.get('AUDIO_MIME_TYPE')};base64,", "")
         audio_binary = base64.decodebytes(audio_stream.encode("utf-8"))
+
+        current_user.ensure_dir_is_built()
         with open(file_address + ".temp", "wb") as file:
             file.write(audio_binary)
 
@@ -72,11 +81,25 @@ def save_recording():
 
     subprocess.call(f"ffmpeg -i \"{file_address}.temp\" {trim_cmd} -c copy \"{file_address}\" -y {volume_cmd}")
 
-    if not phoneme.recording:
-        phoneme.recording = PhonemeRecording(file_relative_address, file_name)
-    else:
-        phoneme.recording.relative_dir = file_relative_address
-        phoneme.recording.name = file_name
+    os.remove(file_address + ".temp")
+
+    current_user.phoneme_recording_objects.append(PhonemeRecording(file_relative_address, file_name, phoneme_id))
+
     db.session.commit()
 
     return jsonify({"msg": "Recording successfully saved!"}), 200
+
+
+@bp.route("user_data/<path:filename>")
+@login_required
+def user_data(filename):
+    relative_address_parts = filename.split("/")
+    if len(relative_address_parts) <= 2:
+        return jsonify({"msg": "invalid file path"}), 400
+
+    if "\\".join(relative_address_parts[:2]) != current_user.user_secure_dir:
+        return jsonify({
+            "msg": "Authorisation error! Attempt to access directory potentially belonging to another user!"
+        }), 403
+
+    return send_from_directory(current_app.config["USER_DIR"], filename)
