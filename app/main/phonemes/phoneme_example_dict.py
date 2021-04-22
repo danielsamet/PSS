@@ -6,7 +6,7 @@ words are in lower case with the letter(s) representing the phoneme in upper cas
 
 phoneme_words = {
     "ˌɛ": ["tEchnological", "outlEt", "handhEld", "watershEd", "Entertain", "documEnted"],
-    "ð": ["moTHer", "boTher", "raTHer", "cloTHing", "smooTH", "THose"],
+    "ð": ["moTHer", "boTHer", "raTHer", "cloTHing", "smooTH", "THose"],
     "ˌʊ": ["outpUt", "handbOOk", "mUmbai", "childhOOd", "gOOdbye", "hollywOOd"],
     "t": ["Tanks", "prompT", "inTake", "moTors", "daTE", "aTTempTed"],
     "ˌɑː": ["bookmARks", "radAR", "photogrAphs", "courtyARd", "moustAche", "paragrAphs"],
