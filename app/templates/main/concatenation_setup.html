@@ -291,7 +291,7 @@
         let recordings_count = {{ current_user.phoneme_recordings|length }};
 
         function update_recording_progress() {
-            let percentage = recordings_count / {{ phonemes|length }} * 100;
+            let percentage = Math.min(recordings_count / {{ phonemes|length }} * 100, 100);
             $("#recording_percentage").text(percentage.toFixed(0) + "%").css("width", percentage + "%");
         }
     </script>
