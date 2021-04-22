@@ -10,7 +10,7 @@ from flask_login import current_user
 from flask_user import login_required
 
 from app import db
-from app.main.concatenator import tts, MissingPhonemeError, MissingPhonemeRecordingError
+from app.main.concatenator import tts, MissingPhonemeError, MissingPhonemeRecordingError, UnknownWordError
 from app.main.models import PhonemeRecording, Phoneme
 
 bp = Blueprint('main', __name__, url_prefix="/")
@@ -28,10 +28,14 @@ def synthesiser():
 
     try:
         phonemes, file_addresses = tts(text_input)
+    except UnknownWordError:
+        return jsonify({"code": 1, "msg": "Unknown word provided! "
+                                          "Please only use words found in the Oxford Dictionary"}), 400
     except MissingPhonemeError:
         return jsonify({"code": 1, "msg": "Unknown phoneme identified!"}), 400
     except MissingPhonemeRecordingError as error:
-        return jsonify({"code": 2, "msg": str(error), "phoneme_id": error.phoneme.id, "symbol": error.phoneme.symbol}), 400
+        return jsonify({"code": 2, "msg": str(error), "phoneme_id": error.phoneme.id,
+                        "symbol": error.phoneme.symbol}), 400
 
     relative_address = file_addresses["relative_address"]
 

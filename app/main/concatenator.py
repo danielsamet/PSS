@@ -19,6 +19,10 @@ from app import create_app
 from app.main.models import Phoneme
 
 
+class UnknownWordError(Exception):
+    pass
+
+
 class MissingPhonemeError(Exception):
     pass
 
@@ -64,7 +68,7 @@ def parse_words(words):
                 for phoneme in current_app.phoneme_map[word]:
                     phonemes.append(phoneme)
             except KeyError:
-                raise RuntimeError("Missing required phonemes")
+                raise UnknownWordError()
 
     return phonemes
 
