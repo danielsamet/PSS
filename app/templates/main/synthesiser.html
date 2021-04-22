@@ -116,13 +116,20 @@
                     let make_visible = [$("#result-container"), btns_container];
                     wavesurfer = await load_audio("waveform", audio_url, false, btns_container, make_visible);
                 }).fail(function (response) {
-                    console.log(response);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: response["responseJSON"]["msg"],
-                        footer: `<p class='text-center'>Go to the <a href='{{ url_for("main.concatenation_setup") }}'>concatenation</a> page to ensure all recordings are marked with a tick!</p>`
-                    });
+                    if (response["responseJSON"]["code"] === 2)
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Missing Phoneme Recording(s)',
+                            html: `One or more phoneme recordings were missing from your saved recordings.
+                            <br>Identified phoneme <b>${response["responseJSON"]["symbol"]}</b> (with id ${response["responseJSON"]["phoneme_id"]}) as missing.`,
+                            footer: `<p class='text-center'>Go to the <a href='{{ url_for("main.concatenation_setup") }}'>concatenation</a> page to ensure all recordings are marked with a tick!</p>`
+                        });
+                    else
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response["responseJSON"]["msg"]
+                        });
                 });
             });
         });

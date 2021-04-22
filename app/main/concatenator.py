@@ -19,6 +19,16 @@ from app import create_app
 from app.main.models import Phoneme
 
 
+class MissingPhonemeError(Exception):
+    pass
+
+
+class MissingPhonemeRecordingError(Exception):
+    def __init__(self, phoneme):
+        self.phoneme = phoneme
+        super().__init__(f"Phoneme recording missing for {phoneme.symbol}!")
+
+
 def parse_text(text):
     """
     raw text is passed in here and parsed into a list of words
@@ -69,10 +79,10 @@ def generate_audio(phonemes):
     for phoneme_needed in set(phonemes) - {" "}:
         phoneme = Phoneme.query.filter_by(symbol=phoneme_needed).first()
         if not phoneme:
-            raise RuntimeError("Error!")
+            raise MissingPhonemeError()
 
         if phoneme.id not in current_user.phoneme_recordings:
-            raise RuntimeError("Missing recordings!")
+            raise MissingPhonemeRecordingError(phoneme)
 
         local_address = current_user.phoneme_recordings[phoneme.id].local_address
         phoneme_recordings[phoneme_needed] = os.path.join(current_app.config.get("STATIC_DIR"), local_address).replace(
