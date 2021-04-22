@@ -85,7 +85,7 @@ def generate_audio(phonemes):
             raise MissingPhonemeRecordingError(phoneme)
 
         local_address = current_user.phoneme_recordings[phoneme.id].local_address
-        phoneme_recordings[phoneme_needed] = os.path.join(current_app.config.get("STATIC_DIR"), local_address).replace(
+        phoneme_recordings[phoneme_needed] = os.path.join(current_app.config.get("USER_DIR"), local_address).replace(
             "\\", "/")
 
     inputs_str = " ".join([f"-i \"{phoneme_recordings[phoneme]}\"" for phoneme in phonemes if phoneme != " "])
@@ -117,13 +117,14 @@ def generate_audio(phonemes):
     else:
         filter_str = ""
 
-    output_rel_dir = os.path.join("recording", "output")
-    output_dir = os.path.join(current_app.config.get("STATIC_DIR"), output_rel_dir)
+    output_dir = os.path.join(current_app.config.get("USER_DIR"), current_user.relative_output_dir)
     output_filename = ''.join(random.choices(string.ascii_letters + string.digits, k=16)) \
                       + f".{current_app.config.get('AUDIO_FILE_EXT')}"
-    output_full = os.path.join(output_dir, output_filename).replace("\\", "/")
+    output_rel = os.path.join(current_user.relative_output_dir, output_filename)
+    output_abs = os.path.join(output_dir, output_filename).replace("\\", "/")
 
-    execute_str = f"ffmpeg {inputs_str} {filter_str} \"{output_full}\" -hide_banner -loglevel error"
+    current_user.ensure_dir_is_built()
+    execute_str = f"ffmpeg {inputs_str} {filter_str} \"{output_abs}\" -hide_banner -loglevel error"
 
     # print("\n")
     # print(execute_str)
@@ -131,8 +132,8 @@ def generate_audio(phonemes):
     subprocess.call(execute_str)
 
     return {
-        "relative_address": os.path.join(output_rel_dir, output_filename),
-        "absolute_address": output_full
+        "relative_address": output_rel,
+        "absolute_address": output_abs
     }
 
 

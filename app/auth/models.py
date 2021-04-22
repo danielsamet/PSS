@@ -106,9 +106,17 @@ class User(db.Model, UserMixin):
     def relative_recording_dir(self):
         return os.path.join(self.user_secure_dir, "recordings")
 
+    @property
+    def relative_output_dir(self):
+        return os.path.join(self.user_secure_dir, "output")
+
     def ensure_dir_is_built(self):
-        for directory in [current_app.config["USER_DIR"], self.user_parent_dir, self.user_secure_dir,
-                          self.relative_recording_dir]:
+        if not os.path.isdir(current_app.config["USER_DIR"]):
+            os.mkdir(current_app.config["USER_DIR"])
+
+        for directory in [self.user_parent_dir, self.user_secure_dir,
+                          self.relative_recording_dir, self.relative_output_dir]:
+            directory = os.path.join(current_app.config["USER_DIR"], directory)
             if not os.path.isdir(directory):
                 os.mkdir(directory)
 
