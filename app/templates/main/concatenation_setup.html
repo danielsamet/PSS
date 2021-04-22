@@ -63,6 +63,16 @@
                             </div>
                         </div>
                     </div>
+                    <div class="card-footer">
+                        <div class="progress">
+                            {% set progress_percentage = 0 %}
+                            <div class="progress-bar bg-success" role="progressbar" id="recording_percentage"
+                                 style="width: {{ progress_percentage }}%;" aria-valuenow="{{ progress_percentage }}"
+                                 aria-valuemin="0" aria-valuemax="100">
+                                {{ progress_percentage }}%
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -256,15 +266,19 @@
                 Toast.fire({
                     icon: 'success',
                     title: 'Successfully saved recording!'
-                })
+                });
+
+                recordings_count++;
+                update_recording_progress();
             });
 
             let active_tab = $(".tab-pane.active");
 
             {%- for phoneme in phonemes -%}
                 {%- if current_user.phoneme_recordings[phoneme.id] %}
-                    {% if loop.index == 1 -%}  {# load audio for first tab as well! #}
+                    {% if loop.index == 1 -%}  {# load audio for first tab as well! (and update progress) #}
                         wavesurfers[{{ phoneme.id }}] = await load_audio("recording-div-" + {{ phoneme.id }}, "{{ current_user.phoneme_recordings[phoneme.id].web_address|safe }}", false, active_tab.find(".btns-container"), [active_tab.find(".btns-container"), active_tab.find(".hint-msg")]);
+                        update_recording_progress();
                     {% endif %}
                     $("#phoneme-tab-{{ phoneme.number }}").on("shown.bs.tab", async function () {
                         let active_tab = $(".tab-pane.active");
@@ -273,6 +287,13 @@
                 {%- endif -%}
             {%- endfor %}
         });
+
+        let recordings_count = {{ current_user.phoneme_recordings|length }};
+
+        function update_recording_progress() {
+            let percentage = recordings_count / {{ phonemes|length }} * 100;
+            $("#recording_percentage").text(percentage.toFixed(0) + "%").css("width", percentage + "%");
+        }
     </script>
 
     {# TODO: put the script below into their own files #}

@@ -41,7 +41,8 @@ def synthesiser():
 @bp.route('/concatenation_setup')
 @login_required
 def concatenation_setup():
-    return render_template("main/concatenation_setup.html", phonemes=Phoneme.query.all())
+    phonemes = Phoneme.query.all()
+    return render_template("main/concatenation_setup.html", phonemes=phonemes)
 
 
 @bp.route("/save_recording", methods=["POST"])
