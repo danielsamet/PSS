@@ -230,13 +230,16 @@
                 active_tab.find(".recording-results").addClass("visually-hidden");
                 active_tab.find(".save-recording").addClass("visually-hidden");
 
-                record_btn.one('mouseup', async function () {
+                let phoneme_id = this.id.replace("btn-", "")
+
+                // add mouseup event listener for this particular record btn
+                $(record_btn[phoneme_id - 1]).one('mouseup', async function () {
                     timer.stop();
                     stop_recording();
                     active_tab.find(".recording-results").removeClass("visually-hidden");
                     active_tab.find(".save-recording").removeClass("visually-hidden");
                     await new Promise(r => setTimeout(r, 100));
-                    wavesurfers[this.id.replace("btn-", "")] = await load_audio("recording-div-" + this.id.replace("btn-", ""), active_tab.find(".recordedAudio")[0].src, true, active_tab.find(".btns-container"), [active_tab.find(".btns-container"), active_tab.find(".hint-msg")]);
+                    wavesurfers[phoneme_id] = await load_audio("recording-div-" + phoneme_id, active_tab.find(".recordedAudio")[0].src, true, active_tab.find(".btns-container"), [active_tab.find(".btns-container"), active_tab.find(".hint-msg")]);
                 });
             });
 
