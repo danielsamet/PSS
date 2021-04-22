@@ -19,11 +19,19 @@
 {% block sub_section %}
     <label class="fw-bold me-3">Voices:</label>
 
-    <button class="btn btn-outline-secondary">Daniel1</button>
-    <button class="btn btn-secondary">Daniel2</button>
-    <button class="btn btn-outline-secondary">Daniel3</button>
-    <button class="btn btn-outline-secondary">Daniel4</button>
+    <button class="btn btn-secondary">Voice 1</button>
     <button class="btn btn-outline-secondary" aria-label="Add Voice" onclick="add_voice()">
         <i class="fas fa-plus"></i>
     </button>
+
+    <script>
+        function add_voice() {
+            Swal.fire({
+                icon: 'info',
+                title: 'Train A Voice',
+                html: "This feature is <b>coming soon</b>. For the time being, there will only be support for a single voice per account.",
+                showConfirmButton: false,
+            });
+        }
+    </script>
 {% endblock sub_section %}

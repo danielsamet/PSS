@@ -72,31 +72,16 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
         crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
     let tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     let tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl)
     });
-
-    function add_voice() {
-        Swal.fire({
-            icon: 'info',
-            title: 'Train A Voice',
-            html: `
-                    <div class="mt-3">
-                        <a class="btn btn-primary btn-lg" href="{{ url_for("main.concatenation_setup") }}">Concatenation</a>
-                    </div>
-            `,
-            showConfirmButton: false,
-            footer: '<span class="text-center"><b>Concatenation</b> is a more antiquated approach, however, ' +
-                '<b>ML</b> will require at least 15 minutes of your voice.</span>'
-        });
-    }
 </script>
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"
-        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
-        crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 {% block extra_js %}{% endblock extra_js %}
 </body>
 
