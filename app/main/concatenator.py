@@ -42,6 +42,12 @@ punctuation = {
     **{punctuation: "   " for punctuation in long_punctuation}
 }
 
+letter_translations = {"A": ["a"], "B": ["be"], "C": ["cee"], "D": ["dee"], "E": ["e"], "F": ["ef"], "G": ["gee"],
+                       "H": ["aitch"], "I": ["i"], "J": ["jay"], "K": ["kay"], "L": ["el"], "M": ["em"], "N": ["en"],
+                       "O": ["o"], "P": ["pee"], "Q": ["cue"], "R": ["ar"], "S": ["ess"], "T": ["tee"], "U": ["you"],
+                       "V": ["vee"], "W": ["double", "you"], "X": ["ex"], "Y": ["why"], "Z": ["zed"]}
+number_translations = {0: "zero"}
+
 
 def parse_text(text):
     """
@@ -61,7 +67,7 @@ def parse_text(text):
             word = word.replace(punctuation_item, "")
             punctuation_space = punctuation[punctuation_item]
 
-        words.append(word.lower())
+        words.append(word)
 
         if punctuation_space:
             words.append(punctuation_space)
@@ -73,7 +79,7 @@ def parse_text(text):
 
 def parse_words(words):
     """
-    word list is parsed and converted into a list of phonemes
+    word list is parsed and tokenised into a list of phoneme symbols
 
     Notes:
     - spaces are represented by an empty list item
@@ -81,15 +87,33 @@ def parse_words(words):
 
     phonemes = []
 
+    def map_word(word):
+        try:
+            for phoneme in current_app.phoneme_map[word.lower()]:
+                phonemes.append(phoneme)
+        except KeyError as key:
+            raise UnknownWordError(key)
+
     for word in words:
         if word in punctuation.values():
             phonemes.append(word)  # add space until the last word
-        else:
-            try:
-                for phoneme in current_app.phoneme_map[word]:
-                    phonemes.append(phoneme)
-            except KeyError as key:
-                raise UnknownWordError(key)
+            continue
+
+        # abbreviation handling
+        if word.isupper():
+            # for every letter, disambiguate it into words and map the word to its phonemes
+            for index, letter in enumerate(word):
+                for phonetic_word in letter_translations[letter]:
+                    map_word(phonetic_word)
+                if index + 1 < len(word):
+                    phonemes.append(" ")
+            continue
+
+        # number handling
+        if word:
+            pass
+
+        map_word(word)
 
     return phonemes
 
@@ -126,14 +150,14 @@ def generate_audio(phonemes):
         for index in range(len(phonemes) - 1):
             if phonemes[index + 1] in punctuation.values():
                 filter_str += f"[a{filter_counter - 1:02}]" if index > 0 else f"[{recording_counter}]"
-                filter_str += f"apad=pad_len=8000"
+                filter_str += f"apad=pad_len={padding_lengths[phonemes[index + 1]]}"
                 filter_str += f"[a{filter_counter:02}];"
             else:
                 filter_str += f"[{0 if index == 0 else f'a{filter_counter - 1:02}'}]" \
                               f"[{1 if index == 0 else recording_counter}]"
 
                 apad = padding_lengths[phonemes[index + 1]] if phonemes[index + 1] in padding_lengths else 2000
-                filter_str += f"acrossfade=ns=2500:c1=esin:c2=esin, apad=pad_len={apad}"
+                filter_str += f"acrossfade=ns=2000:c1=esin:c2=esin, apad=pad_len={apad}"
 
                 if index < len(phonemes) - 2:
                     filter_str += f"[a{filter_counter:02}];"
