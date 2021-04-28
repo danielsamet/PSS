@@ -28,8 +28,9 @@ def synthesiser():
 
     try:
         phonemes, file_addresses = tts(text_input)
-    except UnknownWordError:
-        return jsonify({"code": 1, "msg": "Unknown word provided! "
+    except UnknownWordError as error_word:
+        print(error_word)
+        return jsonify({"code": 1, "msg": f"Unknown word provided!<br>{error_word}<br>"
                                           "Please only use words found in the Oxford Dictionary"}), 400
     except MissingPhonemeError:
         return jsonify({"code": 1, "msg": "Unknown phoneme identified!"}), 400

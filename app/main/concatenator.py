@@ -88,8 +88,8 @@ def parse_words(words):
             try:
                 for phoneme in current_app.phoneme_map[word]:
                     phonemes.append(phoneme)
-            except KeyError:
-                raise UnknownWordError()
+            except KeyError as key:
+                raise UnknownWordError(key)
 
     return phonemes
 
