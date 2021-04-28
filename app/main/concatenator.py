@@ -33,9 +33,19 @@ class MissingPhonemeRecordingError(Exception):
         super().__init__(f"Phoneme recording missing for {phoneme.symbol}!")
 
 
+# punctuation either takes a small pause or a long pause
+small_punctuation = [",", "'", "\"", "(", ")", "-", ";", ":"]
+long_punctuation = [".", "?", "!"]
+punctuation = {
+    " ": " ",
+    **{punctuation: "  " for punctuation in small_punctuation},
+    **{punctuation: "   " for punctuation in long_punctuation}
+}
+
+
 def parse_text(text):
     """
-    raw text is passed in here and parsed into a list of words
+    raw text is passed in here and parsed into a list of words and spaces
 
     Notes:
     - spaces are represented by an empty list item
@@ -43,11 +53,22 @@ def parse_text(text):
 
     words = []
 
-    for word in text.split(" "):
-        words.append(word.lower())
-        words.append(" ")
+    for word in " ".join(text.split()).split(" "):
+        punctuation_items = set(word) & set(punctuation.keys())
+        punctuation_space = ""
 
-    return words[:-1]
+        for punctuation_item in punctuation_items:
+            word = word.replace(punctuation_item, "")
+            punctuation_space = punctuation[punctuation_item]
+
+        words.append(word.lower())
+
+        if punctuation_space:
+            words.append(punctuation_space)
+        else:
+            words.append(" ")
+
+    return words[:-1]  # remove redundant final space
 
 
 def parse_words(words):
@@ -61,8 +82,8 @@ def parse_words(words):
     phonemes = []
 
     for word in words:
-        if word == " ":
-            phonemes.append(" ")  # add space until the last word
+        if word in punctuation.values():
+            phonemes.append(word)  # add space until the last word
         else:
             try:
                 for phoneme in current_app.phoneme_map[word]:
@@ -78,9 +99,11 @@ def generate_audio(phonemes):
     returns file address for generated audio
     """
 
+    print(phonemes)
+
     # get users' phoneme recordings
     phoneme_recordings = {}
-    for phoneme_needed in set(phonemes) - {" "}:
+    for phoneme_needed in set(phonemes) - {" ", "  ", "   "}:
         phoneme = Phoneme.query.filter_by(symbol=phoneme_needed).first()
         if not phoneme:
             raise MissingPhonemeError()
@@ -92,12 +115,16 @@ def generate_audio(phonemes):
         phoneme_recordings[phoneme_needed] = os.path.join(current_app.config.get("USER_DIR"), local_address).replace(
             "\\", "/")
 
-    inputs_str = " ".join([f"-i \"{phoneme_recordings[phoneme]}\"" for phoneme in phonemes if phoneme != " "])
+    # setup concatenation command for actual recordings (ie minus the spaces)
+    inputs_str = " ".join([f"-i \"{phoneme_recordings[phoneme]}\""
+                           for phoneme in phonemes
+                           if phoneme not in punctuation.values()])
 
     if len(phonemes) > 1:
         filter_str, filter_counter, recording_counter = "", 1, 0
+        padding_lengths = {" ": 7000, "  ": 10000, "   ": 15000}
         for index in range(len(phonemes) - 1):
-            if phonemes[index + 1] == " ":
+            if phonemes[index + 1] in punctuation.values():
                 filter_str += f"[a{filter_counter - 1:02}]" if index > 0 else f"[{recording_counter}]"
                 filter_str += f"apad=pad_len=8000"
                 filter_str += f"[a{filter_counter:02}];"
@@ -105,8 +132,8 @@ def generate_audio(phonemes):
                 filter_str += f"[{0 if index == 0 else f'a{filter_counter - 1:02}'}]" \
                               f"[{1 if index == 0 else recording_counter}]"
 
-                apad = 8000 if phonemes[index + 1] == " " else 2000
-                filter_str += f"acrossfade=ns=2500:c1=esin:c2=esin, atempo=sqrt(0.98), apad=pad_len={apad}"
+                apad = padding_lengths[phonemes[index + 1]] if phonemes[index + 1] in padding_lengths else 2000
+                filter_str += f"acrossfade=ns=2500:c1=esin:c2=esin, apad=pad_len={apad}"
 
                 if index < len(phonemes) - 2:
                     filter_str += f"[a{filter_counter:02}];"
@@ -114,6 +141,8 @@ def generate_audio(phonemes):
                 recording_counter += 1
             recording_counter += 1 if index == 0 else 0
             filter_counter += 1
+
+        filter_str += ", atempo=0.9"
 
         print(filter_str)
 
