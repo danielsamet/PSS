@@ -35,7 +35,7 @@ class MissingPhonemeRecordingError(Exception):
 
 # punctuation either takes a small pause or a long pause
 small_punctuation = [",", "'", "\"", "(", ")", "-", ";", ":"]
-long_punctuation = [".", "?", "!"]
+long_punctuation = [".", "?", "!", "..."]
 punctuation = {
     " ": " ",
     **{punctuation: "  " for punctuation in small_punctuation},
