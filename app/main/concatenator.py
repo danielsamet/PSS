@@ -46,7 +46,8 @@ letter_translations = {"A": ["a"], "B": ["be"], "C": ["cee"], "D": ["dee"], "E":
                        "H": ["aitch"], "I": ["i"], "J": ["jay"], "K": ["kay"], "L": ["el"], "M": ["em"], "N": ["en"],
                        "O": ["o"], "P": ["pee"], "Q": ["cue"], "R": ["ar"], "S": ["ess"], "T": ["tee"], "U": ["you"],
                        "V": ["vee"], "W": ["double", "you"], "X": ["ex"], "Y": ["why"], "Z": ["zed"]}
-number_translations = {0: "zero"}
+number_translations = {"0": "zero", "1": "one", "2": "two", "3": "three", "4": "four", "5": "five", "6": "six",
+                       "7": "seven", "8": "eight", "9": "nine"}
 
 
 def parse_text(text):
@@ -110,8 +111,12 @@ def parse_words(words):
             continue
 
         # number handling
-        if word:
-            pass
+        if word.isnumeric():
+            for index, number in enumerate(word):
+                map_word(number_translations[number])
+                if index + 1 < len(word):
+                    phonemes.append(" ")
+            continue
 
         map_word(word)
 
