@@ -2,7 +2,8 @@
 
 {% block sub_section %}
     <h5 class="mb-0 text-center">
-        This webapp is my final year project for Computer Science @ Queen Mary University of London. See my other projects
+        This webapp is my final year project for Computer Science @ Queen Mary University of London. See my other
+        projects
         <a href="#" class="link-success">here</a>.
     </h5>
 {% endblock sub_section %}
@@ -71,7 +72,7 @@
             </div>
 
             <div class="col-auto mt-5">
-                <form class="h-100">
+                <form action="" method="POST" id="registration-login" class="h-100">
                     <div class="card form-card h-100 mx-auto">
                         <div class="card-header bg-second text-white">
                             <h4 class="mb-0">Start Now</h4>
@@ -99,18 +100,19 @@
                                 <a class="link-dark" href="#">Forgot password?</a>
                             </div>
 
-                            {#                            <div class="text-muted" style="max-width: 18em;">#}
-                            {#                                PSS is open-source and free to use under the GNU GPLv3 license#}
-                            {#                            </div>#}
+                            <div class="g-recaptcha" data-sitekey="{{ config["RECAPTCHA_PUBLIC_KEY"] }}"
+                                 data-theme="{{ config["RECAPTCHA_OPTIONS"]["theme"] }}"></div>
 
                             <div class="alert alert-danger mb-0 visually-hidden" id="error_msg"></div>
                         </div>
                         <div class="card-footer bg-second text-white text-end">
                             <button type="button" class="btn btn-success btn-sm fw-bold me-2"
-                                    onclick="form_submission('register');">Register
+                                    onclick="form_submission('register')">
+                                Register
                             </button>
                             <button type="button" class="btn btn-primary btn-sm fw-bold"
-                                    onclick="form_submission('login');">Login
+                                    onclick="form_submission('login')">
+                                Login
                             </button>
                         </div>
                     </div>
@@ -121,6 +123,7 @@
 {% endblock main_content %}
 
 {% block extra_js %}
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <script>
         let email_address = $("#email_address");
         let password = $("#password");
@@ -161,7 +164,8 @@
                 "email_address": email_address.val(),
                 "password": password.val(),
                 "csrf_token": csrf_token.val(),
-                "remember_me": remember_me.is(":checked")
+                "remember_me": remember_me.is(":checked"),
+                "recaptcha": grecaptcha.getResponse(),
             }).done(function (response) {
                 window.location.href = "{{ url_for("main.synthesiser") }}";
             }).fail(function (response) {

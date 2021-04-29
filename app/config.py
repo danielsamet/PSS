@@ -20,5 +20,10 @@ class Config:
     USER_CORPORATION_NAME = "ProjectDan"
     USER_UNAUTHENTICATED_ENDPOINT = 'app.index'
 
+    RECAPTCHA_USE_SSL = False
+    RECAPTCHA_PUBLIC_KEY = "6LeYor0aAAAAAL6o9uRsj0a_phvd69lmemNxZalY"
+    RECAPTCHA_PRIVATE_KEY = "6LeYor0aAAAAAM8OjLCBsghCerL5sDM4DgdE6WwA"
+    RECAPTCHA_OPTIONS = {"theme": "dark"}
+
     AUDIO_MIME_TYPE = "audio/webm;codecs=opus"
     AUDIO_FILE_EXT = "webm"
