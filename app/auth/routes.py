@@ -78,7 +78,6 @@ def register():
     form = LoginForm()
     if form.validate_on_submit():
         email_address = form.email_address.data
-        print(email_address)
 
         if User.query.filter_by(email_address=email_address).first():
             return jsonify({"msg": "Email address already registered to an account!"}), 400

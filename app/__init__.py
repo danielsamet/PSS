@@ -29,7 +29,6 @@ def create_app(config_class=Config, skip_dir_building=False):
         if not os.path.isdir(recording_dir):
             os.mkdir(recording_dir)
 
-    app.words = get_words()
     app.phoneme_map = generate_phoneme_map(config_class.STATIC_DIR)
 
     app.add_url_rule("/favicon", "favicon", lambda: redirect(url_for("static", filename="favicon/favicon.ico")))
