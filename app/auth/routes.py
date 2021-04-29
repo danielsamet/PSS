@@ -77,6 +77,9 @@ def register():
     """standard registration route"""
     form = LoginForm()
     if form.validate_on_submit():
+        if not validate_recaptcha(request.form.get("recaptcha", "", str)):
+            return jsonify({"msg": "Invalid Recaptcha details!"}), 400
+
         email_address = form.email_address.data
 
         if User.query.filter_by(email_address=email_address).first():
@@ -92,7 +95,6 @@ def register():
         return jsonify({"msg": "Success"}), 200
 
     return jsonify({"msg": "Registration failed!"}), 400
-
 
 # @login_manager.user_unauthorized
 # def unauthorized_callback():
