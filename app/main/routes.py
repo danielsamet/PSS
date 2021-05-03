@@ -93,7 +93,7 @@ def save_recording():
     print(os.getcwd())
     logging.info(os.getcwd())
     subprocess.call(f"ffmpeg -i \"{file_address}.temp\" {trim_cmd} -c copy \"{file_address}\" -y {volume_cmd} "
-                    f"-hide_banner -loglevel error")
+                    f"-hide_banner -loglevel verbose")
 
     os.remove(file_address + ".temp")
 
