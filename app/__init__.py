@@ -20,6 +20,9 @@ def create_app(config_class=Config, skip_dir_building=False):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
+    import subprocess
+    subprocess.call("ffmpeg")
+
     db.init_app(app)
     migrate.init_app(app, db, config_class.MIGRATIONS_DIR)
     login.init_app(app)
