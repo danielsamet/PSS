@@ -120,6 +120,8 @@ class User(db.Model, UserMixin):
             if not os.path.isdir(directory):
                 os.mkdir(directory)
 
+            current_app.logger.info(f"{directory} was just built!")
+
     def __repr__(self):
         return f'<User {self.email_address}>'
 
