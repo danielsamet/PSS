@@ -30,7 +30,7 @@ def create_app(config_class=Config, skip_dir_building=False):
             os.mkdir(recording_dir)
 
     # DIR setup
-    app.config["BASE_DIR"] = "app"
+    app.config["BASE_DIR"] = ""
     app.config["STATIC_DIR"] = os.path.join(app.config["BASE_DIR"], "static")
     app.config["USER_DIR_NAME"] = "user_data"
     app.config["USER_DIR"] = os.path.join(app.config["BASE_DIR"], app.config["USER_DIR_NAME"])
