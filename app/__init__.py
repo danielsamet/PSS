@@ -37,6 +37,8 @@ def create_app(config_class=Config, skip_dir_building=False):
 
     print(os.getcwd())
     print(os.listdir())
+    app.logger.warning(os.getcwd())
+    app.logger.warning(os.listdir())
 
     app.phoneme_map = generate_phoneme_map(app.config["STATIC_DIR"])
 
