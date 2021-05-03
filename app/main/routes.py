@@ -73,7 +73,9 @@ def save_recording():
         audio_stream = audio_stream.replace(f"data:{current_app.config.get('AUDIO_MIME_TYPE')};base64,", "")
         audio_binary = base64.decodebytes(audio_stream.encode("utf-8"))
 
+        current_app.logger.info("Going to build...")
         current_user.ensure_dir_is_built()
+        current_app.logger.info("Hmm!")
         with open(file_address + ".temp", "wb") as file:
             file.write(audio_binary)
 
@@ -88,7 +90,14 @@ def save_recording():
     # increase volume cmd for quiet phonemes [k]
     volume_cmd = f"-filter:a 'volume=2'" if phoneme_id in [16] else ""
 
+    for directory in [current_user.user_parent_dir, current_user.user_secure_dir,
+                      current_user.relative_recording_dir, current_user.relative_output_dir]:
+        directory = os.path.join(current_app.config["USER_DIR"], directory)
+        if not os.path.isdir(directory):
+            os.mkdir(directory)
+        current_app.logger.info(f"{directory} was just built!")
     current_app.logger.info(file_address)
+
     subprocess.call(f"ffmpeg -i \"{file_address}.temp\" {trim_cmd} -c copy \"{file_address}\" -y {volume_cmd} "
                     f"-hide_banner -loglevel verbose")
 
