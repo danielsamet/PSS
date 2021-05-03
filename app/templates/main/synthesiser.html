@@ -112,7 +112,7 @@
                     if (wavesurfer !== undefined)
                         wavesurfer.destroy();
 
-                    let audio_url = "{{ url_for("main.user_data", filename="empty_file") }}".replace("empty_file", response["file"]);
+                    let audio_url = "{{ url_for("main.user_data", file="empty_file") }}".replace("empty_file", response["file"]);
                     let make_visible = [$("#result-container"), btns_container];
                     wavesurfer = await load_audio("waveform", audio_url, false, btns_container, make_visible);
                 }).fail(function (response) {

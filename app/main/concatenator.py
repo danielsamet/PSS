@@ -210,6 +210,6 @@ def tts(input_text):
 if __name__ == '__main__':
     # Tests
 
-    with create_app(skip_dir_building=True).app_context():
+    with create_app().app_context():
         # tts("you")
         tts("how are you doing today")

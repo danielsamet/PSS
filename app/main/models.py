@@ -78,4 +78,4 @@ class PhonemeRecording(db.Model):
 
     @property
     def web_address(self):
-        return url_for("main.user_data", filename=os.path.join(self.relative_dir, self.name).replace("\\", "/"))
+        return url_for("main.user_data", file=os.path.join(self.relative_dir, self.name).replace("\\", "/"))

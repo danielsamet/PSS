@@ -1,4 +1,6 @@
+import logging
 import os
+from logging.handlers import RotatingFileHandler
 
 from flask import Flask, redirect, url_for
 from flask_login import LoginManager
@@ -16,8 +18,19 @@ login = LoginManager()
 login.login_view = 'auth.login'
 
 
-def create_app(config_class=Config, skip_dir_building=False):
+def create_app(config_class=Config):
     app = Flask(__name__)
+
+    # setup logging
+    if config_class.SILENT_LOGGING != "True":
+        if not os.path.exists('logs'):
+            os.mkdir('logs')
+        file_handler = RotatingFileHandler(f'logs/{config_class.USER_APP_NAME}.log', maxBytes=2048, backupCount=30)
+        file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s'))
+        file_handler.setLevel(logging.DEBUG)
+        app.logger.addHandler(file_handler)
+
+    app.logger.setLevel(logging.DEBUG)
     app.logger.info(f"{config_class.USER_APP_NAME} initialising...")
 
     app.config.from_object(config_class)
@@ -25,11 +38,6 @@ def create_app(config_class=Config, skip_dir_building=False):
     db.init_app(app)
     migrate.init_app(app, db, config_class.MIGRATIONS_DIR)
     login.init_app(app)
-
-    if not skip_dir_building:
-        recording_dir = os.path.join("app", "static", "recording")
-        if not os.path.isdir(recording_dir):
-            os.mkdir(recording_dir)
 
     # DIR setup
     app.config["BASE_DIR"] = "app"

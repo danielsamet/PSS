@@ -136,4 +136,5 @@ def user_data(file):
             "msg": "Authorisation error! Attempt to access directory potentially belonging to another user!"
         }), 403
 
-    return send_from_directory(current_app.config["USER_DIR"], file)
+    current_app.logger.debug(f"Sending {file} from {current_app.config['USER_DIR_NAME']}")
+    return send_from_directory(current_app.config["USER_DIR_NAME"], file)

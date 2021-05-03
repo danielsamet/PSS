@@ -22,3 +22,5 @@ class Config:
 
     AUDIO_MIME_TYPE = "audio/webm;codecs=opus"
     AUDIO_FILE_EXT = "webm"
+
+    SILENT_LOGGING = False or os.environ.get("SILENT_LOGGING")
