@@ -39,6 +39,7 @@ def create_app(config_class=Config, skip_dir_building=False):
     app.logger.warning(os.listdir("app"))
     app.logger.info(app.config["USER_DIR"])
     if not os.path.isdir(app.config["USER_DIR"]):
+        app.logger.warning("Oh, user_dir wasn't built!")
         os.mkdir(app.config["USER_DIR"])
     app.logger.warning(os.listdir("app"))
     app.logger.warning(os.listdir("app/user_data"))
