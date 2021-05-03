@@ -5,8 +5,7 @@ from datetime import datetime
 from flask import current_app
 from flask_user import UserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadSignature, BadHeader
-from sqlalchemy.ext.associationproxy import association_proxy
-from sqlalchemy.orm.collections import attribute_mapped_collection, column_mapped_collection
+from sqlalchemy.orm.collections import column_mapped_collection
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db, login
@@ -33,14 +32,6 @@ class User(db.Model, UserMixin):
         "PhonemeRecording", collection_class=column_mapped_collection(PhonemeRecording.__table__.c.phoneme_id),
         viewonly=True
     )
-
-    # phoneme_recordings_local = association_proxy(
-    #     "phoneme_recording_objects", "local_address",
-    #     creator=lambda rel_dir, name, phoneme_id: PhonemeRecording(rel_dir, name, phoneme_id)
-    # )
-
-    # phoneme_recordings_web = association_proxy("phoneme_recording_objects", "text",
-    #                                            creator=lambda step, text: PhonemeRecording(text, step))
 
     def __init__(self, email_address, password):
         self.email_address = email_address

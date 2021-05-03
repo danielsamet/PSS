@@ -75,7 +75,10 @@ def parse_text(text):
         else:
             words.append(" ")
 
-    return words[:-1]  # remove redundant final space
+    words_identified = words[:-1]  # remove redundant final space
+    current_app.logger.debug(f"Text parser has identified the following words: {words_identified}")
+
+    return words_identified
 
 
 def parse_words(words):
@@ -120,6 +123,7 @@ def parse_words(words):
 
         map_word(word)
 
+    current_app.logger.debug(f"Word parser has identified the following phonemes: {phonemes}")
     return phonemes
 
 
@@ -174,8 +178,6 @@ def generate_audio(phonemes):
 
         filter_str += ", atempo=0.9"
 
-        print(filter_str)
-
         filter_str = "-filter_complex \"" + filter_str + "\""
     else:
         filter_str = ""
@@ -189,8 +191,7 @@ def generate_audio(phonemes):
     current_user.ensure_dir_is_built()
     execute_str = f"ffmpeg {inputs_str} {filter_str} \"{output_abs}\" -hide_banner -loglevel error"
 
-    # print("\n")
-    # print(execute_str)
+    current_app.logger.debug(f"FFmpeg has been executed with the following command string:\n{execute_str}")
 
     subprocess.call(execute_str)
 

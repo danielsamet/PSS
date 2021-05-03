@@ -6,9 +6,9 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_user import UserManager
 
+from app.config import Config
 from app.main.phonemes.phoneme_map import generate_phoneme_map
 from app.main.phonemes.utils import get_words
-from app.config import Config
 
 migrate = Migrate()
 db = SQLAlchemy()
@@ -18,6 +18,8 @@ login.login_view = 'auth.login'
 
 def create_app(config_class=Config, skip_dir_building=False):
     app = Flask(__name__)
+    app.logger.info(f"{config_class.USER_APP_NAME} initialising...")
+
     app.config.from_object(config_class)
 
     db.init_app(app)
@@ -34,15 +36,6 @@ def create_app(config_class=Config, skip_dir_building=False):
     app.config["STATIC_DIR"] = os.path.join(app.config["BASE_DIR"], "static")
     app.config["USER_DIR_NAME"] = "user_data"
     app.config["USER_DIR"] = os.path.join(app.config["BASE_DIR"], app.config["USER_DIR_NAME"])
-
-    app.logger.warning(os.getcwd())
-    app.logger.warning(os.listdir("app"))
-    app.logger.info(app.config["USER_DIR"])
-    if not os.path.isdir(app.config["USER_DIR"]):
-        app.logger.warning("Oh, user_dir wasn't built!")
-        os.mkdir(app.config["USER_DIR"])
-    app.logger.warning(os.listdir("app"))
-    app.logger.warning(os.listdir("app/user_data"))
 
     app.phoneme_map = generate_phoneme_map(app.config["STATIC_DIR"])
 
@@ -80,4 +73,5 @@ def create_app(config_class=Config, skip_dir_building=False):
                     User=User, Role=Role,
                     Phoneme=Phoneme, PhonemeExample=PhonemeExample, PhonemeRecording=PhonemeRecording)
 
+    app.logger.info(f"{config_class.USER_APP_NAME} initialised and ready!")
     return app

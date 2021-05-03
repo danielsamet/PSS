@@ -32,7 +32,7 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         if not validate_recaptcha(request.form.get("recaptcha", "", str)):
-            return jsonify({"msg": "Invalid Recaptcha details!"}), 400
+            return jsonify({"msg": "Invalid reCaptcha details!"}), 400
 
         user = User.query.filter(db.func.lower(User.email_address) == form.email_address.data.lower()).first()
         password = form.password.data
@@ -78,7 +78,7 @@ def register():
     form = LoginForm()
     if form.validate_on_submit():
         if not validate_recaptcha(request.form.get("recaptcha", "", str)):
-            return jsonify({"msg": "Invalid Recaptcha details!"}), 400
+            return jsonify({"msg": "Invalid reCaptcha details!"}), 400
 
         email_address = form.email_address.data
 
@@ -88,15 +88,11 @@ def register():
         user = User(email_address, form.password.data)
         db.session.add(user)
         db.session.commit()
+        current_app.logger.debug(f'{user} has successfully registered!')
 
         login_user(user, remember=form.remember_me.data)
-        current_app.logger.debug(f'{user} has successfully logged in')
+        current_app.logger.debug(f'{user} has successfully logged in!')
 
         return jsonify({"msg": "Success"}), 200
 
     return jsonify({"msg": "Registration failed!"}), 400
-
-# @login_manager.user_unauthorized
-# def unauthorized_callback():
-#     print(12345)
-#     return redirect(url_for("app.index"))

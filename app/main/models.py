@@ -1,6 +1,6 @@
 import os
 
-from flask import url_for
+from flask import url_for, current_app
 
 from app import db
 
@@ -20,6 +20,7 @@ class Phoneme(db.Model):
     def __init__(self, symbol, number):
         self.symbol = symbol
         self.number = number
+        current_app.logger.info(f"New Phoneme {self} created")
 
     def __repr__(self):
         return f"<Phoneme {self.number}:{self.symbol}>"
@@ -39,6 +40,7 @@ class PhonemeExample(db.Model):
     def __init__(self, word, breakdown):
         self.word = word
         self.phoneme_breakdown = breakdown
+        current_app.logger.info(f"New Phoneme Example {self} created")
 
     def __repr__(self):
         return f"<PhonemeExample {self.phoneme}:{self.id} - {self.word}>"
@@ -63,6 +65,8 @@ class PhonemeRecording(db.Model):
         self.name = name
 
         self.phoneme_id = phoneme_id
+
+        current_app.logger.info(f"New Recording {self} created")
 
     def __repr__(self):
         return f"<PhonemeRecording {self.user}:{self.phoneme}>"

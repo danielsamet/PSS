@@ -2,7 +2,6 @@ import base64
 import binascii
 import datetime
 import hashlib
-import logging
 import os
 import subprocess
 
@@ -24,22 +23,29 @@ def synthesiser():
         return render_template("main/synthesiser.html")
 
     text_input = request.form.get("text_input", "", str)
+
+    current_app.logger.info(f"Speech synthesis requested for '{text_input}' by {current_user}")
+
     if not text_input:
+        current_app.logger.debug(f"400 returned due to text being empty")
         return jsonify({"msg": "Text cannot be empty!"}), 400
 
     try:
         phonemes, file_addresses = tts(text_input)
     except UnknownWordError as error_word:
-        print(error_word)
+        current_app.logger.debug(f"Unknown word identified '{error_word}'")
         return jsonify({"code": 1, "msg": f"Unknown word provided!<br>{error_word}<br>"
                                           "Please only use words found in the Oxford Dictionary"}), 400
     except MissingPhonemeError:
+        current_app.logger.warning(f"Missing phoneme error occurred!")
         return jsonify({"code": 1, "msg": "Unknown phoneme identified!"}), 400
     except MissingPhonemeRecordingError as error:
+        current_app.logger.debug(f"User has not recorded phoneme {error.phoneme.symbol}")
         return jsonify({"code": 2, "msg": str(error), "phoneme_id": error.phoneme.id,
                         "symbol": error.phoneme.symbol}), 400
 
     relative_address = file_addresses["relative_address"]
+    current_app.logger.info(f"Speech synthesis completed successfully for {current_user}")
 
     return jsonify({"text_input": text_input, "file": relative_address, "phonemes": phonemes}), 200
 
@@ -62,6 +68,8 @@ def save_recording():
     if not phoneme:
         return jsonify({"msg": "Unknown phoneme id supplied!"}), 400
 
+    current_app.logger.info(f"Recording save request made for {phoneme} by {current_user}...")
+
     # random name is to prevent caching issues when re-recording a phoneme
     random_name = hashlib.md5(str(datetime.datetime.utcnow()).encode('utf-8')).hexdigest().lower()
     file_name = f"{random_name}.{current_app.config.get('AUDIO_FILE_EXT')}"
@@ -80,6 +88,7 @@ def save_recording():
             file.write(audio_binary)
 
     except (OSError, binascii.Error):
+        current_app.logger.exception("Error occurred whilst saving audio binary to file!")
         return jsonify({"msg": "Recording could not be saved successfully!"}), 400
 
     # crop audio cmd
@@ -89,14 +98,6 @@ def save_recording():
 
     # increase volume cmd for quiet phonemes [k]
     volume_cmd = f"-filter:a 'volume=2'" if phoneme_id in [16] else ""
-
-    for directory in [current_user.user_parent_dir, current_user.user_secure_dir,
-                      current_user.relative_recording_dir, current_user.relative_output_dir]:
-        directory = os.path.join(current_app.config["USER_DIR"], directory)
-        if not os.path.isdir(directory):
-            os.mkdir(directory)
-        current_app.logger.info(f"{directory} was just built!")
-    current_app.logger.info(file_address)
 
     subprocess.call(f"ffmpeg -i \"{file_address}.temp\" {trim_cmd} -c copy \"{file_address}\" -y {volume_cmd} "
                     f"-hide_banner -loglevel verbose")
@@ -115,14 +116,18 @@ def save_recording():
     current_user.phoneme_recording_objects.append(PhonemeRecording(file_relative_address, file_name, phoneme_id))
 
     db.session.commit()
+    current_app.logger.info(f"Recording save request for {phoneme} by {current_user} completed successfully")
 
     return jsonify({"msg": "Recording successfully saved!"}), 200
 
 
-@bp.route("user_data/<path:filename>")
+@bp.route("user_data/<path:file>")
 @login_required
-def user_data(filename):
-    relative_address_parts = filename.split("/")
+def user_data(file):
+    current_app.logger.debug(f"{current_user} requested {file}")
+
+    relative_address_parts = file.split("/")
+
     if len(relative_address_parts) <= 2:
         return jsonify({"msg": "invalid file path"}), 400
 
@@ -131,4 +136,4 @@ def user_data(filename):
             "msg": "Authorisation error! Attempt to access directory potentially belonging to another user!"
         }), 403
 
-    return send_from_directory(current_app.config["USER_DIR"], filename)
+    return send_from_directory(current_app.config["USER_DIR"], file)
