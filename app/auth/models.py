@@ -114,6 +114,8 @@ class User(db.Model, UserMixin):
         if not os.path.isdir(current_app.config["USER_DIR"]):
             os.mkdir(current_app.config["USER_DIR"])
 
+        current_app.logger.info("Building directories!!")
+
         for directory in [self.user_parent_dir, self.user_secure_dir,
                           self.relative_recording_dir, self.relative_output_dir]:
             directory = os.path.join(current_app.config["USER_DIR"], directory)
