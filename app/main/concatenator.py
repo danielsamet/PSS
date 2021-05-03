@@ -153,11 +153,12 @@ def generate_audio(phonemes):
         filter_str, filter_counter, recording_counter = "", 1, 0
         padding_lengths = {" ": 7000, "  ": 10000, "   ": 15000}
         for index in range(len(phonemes) - 1):
-            if phonemes[index + 1] in punctuation.values():
+            if phonemes[index + 1] in punctuation.values():  # if space to be added
                 filter_str += f"[a{filter_counter - 1:02}]" if index > 0 else f"[{recording_counter}]"
                 filter_str += f"apad=pad_len={padding_lengths[phonemes[index + 1]]}"
                 filter_str += f"[a{filter_counter:02}];"
-            else:
+
+            else:  # if phonemes to be concatenated
                 filter_str += f"[{0 if index == 0 else f'a{filter_counter - 1:02}'}]" \
                               f"[{1 if index == 0 else recording_counter}]"
 
