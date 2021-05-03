@@ -111,6 +111,7 @@ class User(db.Model, UserMixin):
         return os.path.join(self.user_secure_dir, "output")
 
     def ensure_dir_is_built(self):
+        print(os.getcwd())
         if not os.path.isdir(current_app.config["USER_DIR"]):
             os.mkdir(current_app.config["USER_DIR"])
 

@@ -35,6 +35,9 @@ def create_app(config_class=Config, skip_dir_building=False):
     app.config["USER_DIR_NAME"] = "user_data"
     app.config["USER_DIR"] = os.path.join(app.config["BASE_DIR"], app.config["USER_DIR_NAME"])
 
+    print(os.getcwd())
+    print(os.listdir())
+
     app.phoneme_map = generate_phoneme_map(app.config["STATIC_DIR"])
 
     app.add_url_rule("/favicon", "favicon", lambda: redirect(url_for("static", filename="favicon/favicon.ico")))
