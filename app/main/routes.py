@@ -89,9 +89,7 @@ def save_recording():
     volume_cmd = f"-filter:a 'volume=2'" if phoneme_id in [16] else ""
 
     # subprocess.run(["ls", "/var/app/current/app/"])
-    print(file_address)
-    print(os.getcwd())
-    logging.info(os.getcwd())
+    current_app.logger.info(file_address)
     subprocess.call(f"ffmpeg -i \"{file_address}.temp\" {trim_cmd} -c copy \"{file_address}\" -y {volume_cmd} "
                     f"-hide_banner -loglevel verbose")
 
