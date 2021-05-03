@@ -9,11 +9,6 @@ class Config:
     SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI") or "sqlite:///app.db"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-    STATIC_DIR = os.path.join(BASE_DIR, "static")
-    USER_DIR_NAME = "user_data"
-    USER_DIR = os.path.join(BASE_DIR, USER_DIR_NAME)
-
     USER_EMAIL_SENDER_EMAIL = "danielqmuniproject@gmail.com"
     USER_APP_NAME = "PSS"
     USER_COPYRIGHT_YEAR = 2021

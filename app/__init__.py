@@ -29,7 +29,13 @@ def create_app(config_class=Config, skip_dir_building=False):
         if not os.path.isdir(recording_dir):
             os.mkdir(recording_dir)
 
-    app.phoneme_map = generate_phoneme_map(config_class.STATIC_DIR)
+    # DIR setup
+    app.config["BASE_DIR"] = os.path.abspath(os.path.dirname(__file__))
+    app.config["STATIC_DIR"] = os.path.join(app.config["BASE_DIR"], "static")
+    app.config["USER_DIR_NAME"] = "user_data"
+    app.config["USER_DIR"] = os.path.join(app.config["BASE_DIR"], app.config["USER_DIR_NAME"])
+
+    app.phoneme_map = generate_phoneme_map(app.config["STATIC_DIR"])
 
     app.add_url_rule("/favicon", "favicon", lambda: redirect(url_for("static", filename="favicon/favicon.ico")))
     app.add_url_rule("/favicon-16x16", "favicon-16x16",
