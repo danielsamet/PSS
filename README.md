@@ -19,3 +19,7 @@
 3) Update any database model changes with the following commands:
     1) flask db migrate
     2) flask db upgrade
+   
+**Running the WebApp**
+
+Enter `flask run` into a terminal
