@@ -32,7 +32,7 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         if not validate_recaptcha(request.form.get("recaptcha", "", str)):
-            return jsonify({"msg": "Invalid reCaptcha details!"}), 400
+            return jsonify({"msg": "Invalid reCAPTCHA details!"}), 400
 
         user = User.query.filter(db.func.lower(User.email_address) == form.email_address.data.lower()).first()
         password = form.password.data
@@ -78,7 +78,7 @@ def register():
     form = LoginForm()
     if form.validate_on_submit():
         if not validate_recaptcha(request.form.get("recaptcha", "", str)):
-            return jsonify({"msg": "Invalid reCaptcha details!"}), 400
+            return jsonify({"msg": "Invalid reCAPTCHA details!"}), 400
 
         email_address = form.email_address.data
 
