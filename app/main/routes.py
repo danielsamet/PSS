@@ -133,7 +133,8 @@ def user_data(file):
 
     if "\\".join(relative_address_parts[:2]) != current_user.user_secure_dir:
         return jsonify({
-            "msg": "Authorisation error! Attempt to access directory potentially belonging to another user!"
+            "msg": "Authorisation error! You are attempting to access a directory potentially belonging to another "
+                   "user!"
         }), 403
 
     current_app.logger.debug(f"Sending {file} from {current_app.config['USER_DIR_NAME']}")
